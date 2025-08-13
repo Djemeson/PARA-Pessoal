@@ -1,734 +1,2070 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel — Abas Laterais</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0c0f14;
-      --panel: #11151b;
-      --card: #171b23;
-      --muted: #93a0b4;
-      --text: #e7edf7;
-      --primary: #6d7cff;
-      --primary-2: #40d6b5;
-      --stroke: #222838;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 16px;
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0; background: radial-gradient(1200px 800px at 120% -10%, #182032 0%, transparent 60%) , var(--bg);
-      color: var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-    }
-    .app { display: grid; grid-template-columns: 260px 1fr; height: 100dvh; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel — Abas Laterais</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0c0f14;
+        --panel: #11151b;
+        --card: #171b23;
+        --muted: #93a0b4;
+        --text: #e7edf7;
+        --primary: #6d7cff;
+        --primary-2: #40d6b5;
+        --stroke: #222838;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        --radius: 16px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background:
+          radial-gradient(
+            1200px 800px at 120% -10%,
+            #182032 0%,
+            transparent 60%
+          ),
+          var(--bg);
+        color: var(--text);
+        font-family:
+          Inter,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          "Helvetica Neue",
+          Arial,
+          "Noto Sans",
+          "Apple Color Emoji",
+          "Segoe UI Emoji";
+      }
+      .app {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        height: 100dvh;
+      }
 
-    /* Sidebar */
-    .sidebar {
-      border-right: 1px solid var(--stroke); background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
-      padding: 20px 16px; position: relative;
-    }
-    .brand { display:flex; align-items:center; gap:10px; padding:10px 12px; margin-bottom: 16px; }
-    .brand .logo { width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: var(--shadow); display:grid; place-items:center; font-weight:800; }
-    .brand .title { font-weight:700; letter-spacing:.3px; }
+      /* Sidebar */
+      .sidebar {
+        border-right: 1px solid var(--stroke);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0)
+        );
+        padding: 20px 16px;
+        position: relative;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        margin-bottom: 16px;
+      }
+      .brand .logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        box-shadow: var(--shadow);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+      .brand .title {
+        font-weight: 700;
+        letter-spacing: 0.3px;
+      }
 
-    .tabs { display:flex; flex-direction:column; gap:8px; margin-top: 8px; }
-    .tab { display:flex; align-items:center; gap:12px; padding:12px; border-radius: 12px; color: var(--muted); cursor: pointer; transition: .2s ease; border:1px solid transparent; }
-    .tab:hover { background: rgba(255,255,255,.03); color: #d7e2f4; border-color: rgba(255,255,255,.06); }
-    .tab.active { background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0)); color: var(--text); border-color: rgba(255,255,255,.08); }
-    .tab .icon { width: 22px; height: 22px; opacity: .9; }
+      .tabs {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .tab {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 12px;
+        color: var(--muted);
+        cursor: pointer;
+        transition: 0.2s ease;
+        border: 1px solid transparent;
+      }
+      .tab:hover {
+        background: rgba(255, 255, 255, 0.03);
+        color: #d7e2f4;
+        border-color: rgba(255, 255, 255, 0.06);
+      }
+      .tab.active {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.05),
+          rgba(255, 255, 255, 0)
+        );
+        color: var(--text);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+      .tab .icon {
+        width: 22px;
+        height: 22px;
+        opacity: 0.9;
+      }
 
-    .sidebar .footer { position:absolute; left:16px; right:16px; bottom:16px; font-size:12px; color: var(--muted); opacity:.8; }
+      .sidebar .footer {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        font-size: 12px;
+        color: var(--muted);
+        opacity: 0.8;
+      }
 
-    /* Main */
-    .main { display:flex; flex-direction:column; height: 100dvh; }
-    .topbar { display:flex; align-items:center; justify-content:space-between; padding: 18px 22px; border-bottom:1px solid var(--stroke); backdrop-filter: blur(6px); position:sticky; top:0; z-index:10; }
-    .breadcrumbs { color: var(--muted); font-size: 14px; }
-    .actions { display:flex; align-items:center; gap:10px; }
-    .btn {
-      background: #0f1320; color:#dfe7f7; border:1px solid var(--stroke); padding: 10px 14px; border-radius: 12px; cursor:pointer; transition:.2s; font-weight:600; box-shadow: var(--shadow);
-    }
-    .btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.22); }
-    .btn.primary { background: linear-gradient(135deg, var(--primary), #8f97ff); border: none; color: white; }
-    .btn.ghost { background: transparent; border:1px dashed var(--stroke); color: var(--muted); }
-    .edit-indicator { font-size:12px; color: var(--muted); padding: 2px 8px; border:1px dashed rgba(255,255,255,.15); border-radius: 999px; }
+      /* Main */
+      .main {
+        display: flex;
+        flex-direction: column;
+        height: 100dvh;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--stroke);
+        backdrop-filter: blur(6px);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .breadcrumbs {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .btn {
+        background: #0f1320;
+        color: #dfe7f7;
+        border: 1px solid var(--stroke);
+        padding: 10px 14px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+        font-weight: 600;
+        box-shadow: var(--shadow);
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 255, 255, 0.22);
+      }
+      .btn.primary {
+        background: linear-gradient(135deg, var(--primary), #8f97ff);
+        border: none;
+        color: white;
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px dashed var(--stroke);
+        color: var(--muted);
+      }
+      .btn.danger {
+        background: #b33;
+        border-color: #b33;
+        color: #fff;
+      }
+      .edit-indicator {
+        font-size: 12px;
+        color: var(--muted);
+        padding: 2px 8px;
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        border-radius: 999px;
+      }
 
-    /* Content area */
-    .content { padding: 24px; overflow: auto; }
-    .grid { 
-      display:grid; 
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
-      gap: 16px; 
-      align-content: start;
-    }
+      /* Content area */
+      .content {
+        padding: 24px;
+        overflow: auto;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+        align-content: start;
+      }
 
-    /* Cards */
-    .card {
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border: 1px solid var(--stroke); border-radius: var(--radius); padding: 14px; min-height: 120px; position: relative; overflow: hidden; box-shadow: var(--shadow);
-      transition: transform .18s ease, box-shadow .18s ease, border-color .2s;
-    }
-    .card:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.18); }
-    .card .title { font-weight: 700; margin: 4px 0 8px; letter-spacing:.2px; }
-    .card .muted { color: var(--muted); font-size: 13px; }
+      /* Cards */
+      .card {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0.01)
+        );
+        border: 1px solid var(--stroke);
+        border-radius: var(--radius);
+        padding: 14px;
+        min-height: 120px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease,
+          border-color 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 255, 255, 0.18);
+      }
+      .card .title {
+        font-weight: 700;
+        margin: 4px 0 8px;
+        letter-spacing: 0.2px;
+      }
+      .card .muted {
+        color: var(--muted);
+        font-size: 13px;
+      }
 
-    .add-card { display:grid; place-items:center; min-height: 110px; border: 1px dashed rgba(255,255,255,.22); background: transparent; cursor: pointer; transition: .15s; }
-    .add-card:hover { border-color: rgba(255,255,255,.36); background: rgba(255,255,255,.04); }
-    .add-card .plus { font-size: 26px; color: #aeb9cd; }
+      .add-card {
+        display: grid;
+        place-items: center;
+        min-height: 110px;
+        border: 1px dashed rgba(255, 255, 255, 0.22);
+        background: transparent;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .add-card:hover {
+        border-color: rgba(255, 255, 255, 0.36);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .add-card .plus {
+        font-size: 26px;
+        color: #aeb9cd;
+      }
 
-    .item-card { cursor: pointer; }
-    .item-card .badge { font-size: 10px; color:#cdd7eb; background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); padding: 3px 8px; border-radius:999px; display:inline-block; }
+      .item-card {
+        cursor: pointer;
+      }
+      .item-card .badge {
+        font-size: 10px;
+        color: #cdd7eb;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 3px 8px;
+        border-radius: 999px;
+        display: inline-block;
+      }
 
-    /* Edit mode affordances */
-    .draggable { cursor: grab; }
-    .dragging { opacity: .7; transform: scale(.98); }
-    .handle {
-      position:absolute; top:10px; right:10px; display:flex; gap:6px; opacity:0; transition:.15s; background: rgba(15, 19, 32, .7); border:1px solid rgba(255,255,255,.1); padding:6px; border-radius:10px; backdrop-filter: blur(6px);
-    }
-    .card.editable:hover .handle { opacity:1; }
-    .handle button { background: transparent; border: none; color: #b9c6e0; cursor: pointer; font-size: 16px; }
+      /* Edit mode affordances */
+      .draggable {
+        cursor: grab;
+      }
+      .dragging {
+        opacity: 0.7;
+        transform: scale(0.98);
+      }
+      .handle {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 6px;
+        opacity: 0;
+        transition: 0.15s;
+        background: rgba(15, 19, 32, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 6px;
+        border-radius: 10px;
+        backdrop-filter: blur(6px);
+      }
+      .card.editable:hover .handle {
+        opacity: 1;
+      }
+      .handle button {
+        background: transparent;
+        border: none;
+        color: #b9c6e0;
+        cursor: pointer;
+        font-size: 16px;
+      }
 
-    /* Modal */
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.5); display:none; align-items: center; justify-content: center; z-index: 50; }
-    .modal { width: min(640px, 92vw); background: var(--panel); border:1px solid var(--stroke); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); }
-    .modal h3 { margin: 0 0 10px; }
+      /* Modal */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+      }
+      .modal {
+        width: min(640px, 92vw);
+        background: var(--panel);
+        border: 1px solid var(--stroke);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+      }
+      .modal h3 {
+        margin: 0 0 10px;
+      }
 
-    /* Tiny toast */
-    .toast { position: fixed; right: 18px; bottom: 18px; background: rgba(26,31,47,.85); border:1px solid rgba(255,255,255,.1); padding:10px 12px; border-radius: 12px; color:#e6eefc; display:none; z-index:60; }
+      /* Tiny toast */
+      .toast {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        background: rgba(26, 31, 47, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 10px 12px;
+        border-radius: 12px;
+        color: #e6eefc;
+        display: none;
+        z-index: 60;
+      }
 
-    /* HABITS */
-    .habit-wrap { padding: 18px; border-radius: var(--radius); border:1px solid var(--stroke); background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); box-shadow: var(--shadow); }
-    .habit-head { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
-    .habit-head .controls { display:flex; gap:8px; }
-    .habit-list { margin-top:12px; display:flex; flex-direction:column; gap:10px; }
-    .habit-row { display:grid; grid-template-columns: 1.4fr repeat(7, 1fr) 80px; gap:8px; align-items:center; padding:10px; border:1px solid var(--stroke); border-radius:12px; background:#0f1320; }
-    .habit-row .name { font-weight:600; }
-    .habit-row .day { display:grid; place-items:center; height:36px; border:1px solid rgba(255,255,255,.08); border-radius:10px; cursor:pointer; user-select:none; }
-    .habit-row .day.checked { background: linear-gradient(135deg, var(--primary-2), #67ead1); color:#05221c; border-color: transparent; font-weight:700; }
-    .habit-row .pct { text-align:center; color:#cfe6de; font-weight:700; }
-    .habit-empty { color: var(--muted); font-size:14px; padding: 8px; }
+      /* HABITS */
+      .habit-wrap {
+        padding: 18px;
+        border-radius: var(--radius);
+        border: 1px solid var(--stroke);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0.01)
+        );
+        box-shadow: var(--shadow);
+      }
+      .habit-head {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .habit-head .controls {
+        display: flex;
+        gap: 8px;
+      }
+      .habit-list {
+        margin-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .habit-row {
+        display: grid;
+        grid-template-columns: 1.4fr repeat(7, 1fr) 80px;
+        gap: 8px;
+        align-items: center;
+        padding: 10px;
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        background: #0f1320;
+      }
+      .habit-row .name {
+        font-weight: 600;
+      }
+      .habit-row .day {
+        display: grid;
+        place-items: center;
+        height: 36px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .habit-row .day.checked {
+        background: linear-gradient(135deg, var(--primary-2), #67ead1);
+        color: #05221c;
+        border-color: transparent;
+        font-weight: 700;
+      }
+      .habit-row .pct {
+        text-align: center;
+        color: #cfe6de;
+        font-weight: 700;
+      }
+      .habit-empty {
+        color: var(--muted);
+        font-size: 14px;
+        padding: 8px;
+      }
 
-    /* POMODORO */
-    .pomodoro { display:grid; gap:14px; padding:18px; border:1px solid var(--stroke); border-radius:var(--radius); background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); box-shadow: var(--shadow); max-width:640px; }
-    .pomodoro .display { font-size:56px; font-weight:800; letter-spacing:2px; text-align:center; }
-    .pomodoro .chips { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
-    .chip { padding:8px 10px; border-radius:999px; border:1px solid var(--stroke); cursor:pointer; font-weight:600; }
-    .chip.active { background: linear-gradient(135deg, var(--primary), #8f97ff); color:white; border:none; }
-    .pomodoro .controls { display:flex; gap:8px; justify-content:center; }
-    .pomodoro .controls .btn { font-size:16px; padding:12px 16px; }
-    .pomodoro .settings { display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; color:var(--muted); }
-    .pomodoro input[type="number"] { width:84px; padding:8px; border-radius:10px; border:1px solid var(--stroke); background:#0f1320; color:#e7edf7; }
-    .pomodoro .stat { text-align:center; color:var(--muted); }
+      /* POMODORO */
+      .pomodoro {
+        display: grid;
+        gap: 14px;
+        padding: 18px;
+        border: 1px solid var(--stroke);
+        border-radius: var(--radius);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0.01)
+        );
+        box-shadow: var(--shadow);
+        max-width: 640px;
+      }
+      .pomodoro .display {
+        font-size: 56px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-align: center;
+      }
+      .pomodoro .chips {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .chip {
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--stroke);
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .chip.active {
+        background: linear-gradient(135deg, var(--primary), #8f97ff);
+        color: white;
+        border: none;
+      }
+      .pomodoro .controls {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+      .pomodoro .controls .btn {
+        font-size: 16px;
+        padding: 12px 16px;
+      }
+      .pomodoro .settings {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        color: var(--muted);
+      }
+      .pomodoro input[type="number"] {
+        width: 84px;
+        padding: 8px;
+        border-radius: 10px;
+        border: 1px solid var(--stroke);
+        background: #0f1320;
+        color: #e7edf7;
+      }
+      .pomodoro .stat {
+        text-align: center;
+        color: var(--muted);
+      }
 
-    @media (max-width: 900px) {
-      .app { grid-template-columns: 82px 1fr; }
-      .brand .title { display:none; }
-      .tab span { display:none; }
-      .tab { justify-content: center; }
-      .topbar { padding: 14px 16px; }
-      .habit-row { grid-template-columns: 1fr repeat(7, 40px) 64px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="brand" aria-label="Marca">
-        <div class="logo">Δ</div>
-        <div class="title">Workspace</div>
-      </div>
-      <nav class="tabs" id="tabs">
-        <div class="tab active" data-tab="dashboard"> 
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zM3 21h8v-6H3v6zm10-8h8V3h-8v10z"/></svg>
-          <span>Dashboard</span>
+      @media (max-width: 900px) {
+        .app {
+          grid-template-columns: 82px 1fr;
+        }
+        .brand .title {
+          display: none;
+        }
+        .tab span {
+          display: none;
+        }
+        .tab {
+          justify-content: center;
+        }
+        .topbar {
+          padding: 14px 16px;
+        }
+        .habit-row {
+          grid-template-columns: 1fr repeat(7, 40px) 64px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand" aria-label="Marca">
+          <div class="logo">Δ</div>
+          <div class="title">Workspace</div>
         </div>
-        <div class="tab" data-tab="projetos">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 7h18M3 12h18M3 17h18"/><path d="M8 7v12"/></svg>
-          <span>Projetos</span>
+        <nav class="tabs" id="tabs">
+          <div class="tab active" data-tab="dashboard">
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            >
+              <path
+                d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zM3 21h8v-6H3v6zm10-8h8V3h-8v10z"
+              />
+            </svg>
+            <span>Dashboard</span>
+          </div>
+          <div class="tab" data-tab="projetos">
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            >
+              <path d="M3 7h18M3 12h18M3 17h18" />
+              <path d="M8 7v12" />
+            </svg>
+            <span>Projetos</span>
+          </div>
+          <div class="tab" data-tab="areas">
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            >
+              <circle cx="6" cy="6" r="3" />
+              <circle cx="18" cy="6" r="3" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="18" r="3" />
+            </svg>
+            <span>Áreas</span>
+          </div>
+          <div class="tab" data-tab="recursos">
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            >
+              <path d="M12 2v20M2 12h20" />
+            </svg>
+            <span>Recursos</span>
+          </div>
+          <div class="tab" data-tab="arquivo">
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            >
+              <path
+                d="M4 4h10l6 6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"
+              />
+              <path d="M14 4v6h6" />
+            </svg>
+            <span>Arquivo</span>
+          </div>
+          <div class="tab" data-tab="habitos">
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            >
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+            <span>Hábitos</span>
+          </div>
+          <div class="tab" data-tab="pomodoro">
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 3" />
+            </svg>
+            <span>Pomodoro</span>
+          </div>
+        </nav>
+        <div class="footer">
+          UI elegante • arraste para organizar • clique no “+” para criar
         </div>
-        <div class="tab" data-tab="areas">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/></svg>
-          <span>Áreas</span>
-        </div>
-        <div class="tab" data-tab="recursos">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v20M2 12h20"/></svg>
-          <span>Recursos</span>
-        </div>
-        <div class="tab" data-tab="arquivo">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 4h10l6 6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M14 4v6h6"/></svg>
-          <span>Arquivo</span>
-        </div>
-        <div class="tab" data-tab="habitos">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 6L9 17l-5-5"/></svg>
-          <span>Hábitos</span>
-        </div>
-        <div class="tab" data-tab="pomodoro">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-          <span>Pomodoro</span>
-        </div>
-      </nav>
-      <div class="footer">UI elegante • arraste para organizar • clique no “+” para criar</div>
-    </aside>
+      </aside>
 
-    <main class="main">
-      <div class="topbar">
-        <div class="breadcrumbs"><span id="crumb">Dashboard</span></div>
-        <div class="actions">
-          <span class="edit-indicator" id="editIndicator" hidden>Modo de edição</span>
-          <button id="editBtn" class="btn">Editar</button>
-          <button id="saveBtn" class="btn primary" title="Salvar organização">Salvar</button>
+      <main class="main">
+        <div class="topbar">
+          <div class="breadcrumbs"><span id="crumb">Dashboard</span></div>
+          <div class="actions">
+            <span class="edit-indicator" id="editIndicator" hidden
+              >Modo de edição</span
+            >
+            <button id="editBtn" class="btn">Editar</button>
+            <button id="saveBtn" class="btn primary" title="Salvar organização">
+              Salvar
+            </button>
+          </div>
         </div>
-      </div>
 
-      <section class="content">
-        <div id="view-dashboard" class="view">
-          <div class="grid" data-tab-grid="dashboard">
-            <div class="card item-card" data-color="#6d7cff">
-              <div class="handle" aria-hidden="true">
-                <button class="rename" title="Renomear">✏️</button>
-                <button class="paint" title="Cor">🎨</button>
-                <button class="remove" title="Remover">🗑️</button>
+        <section class="content">
+          <div id="view-dashboard" class="view">
+            <div class="grid" data-tab-grid="dashboard">
+              <div class="card item-card" id="indicadoresCard">
+                <div class="badge">Indicadores</div>
+                <div class="title">Indicadores</div>
+                <div class="muted"></div>
               </div>
-              <div class="badge">Widget</div>
-              <div class="title" contenteditable="false">Indicadores</div>
-              <div class="muted">KPIs do provedor • hoje</div>
-            </div>
-            <div class="card item-card" data-color="#40d6b5">
-              <div class="handle" aria-hidden="true">
-                <button class="rename" title="Renomear">✏️</button>
-                <button class="paint" title="Cor">🎨</button>
-                <button class="remove" title="Remover">🗑️</button>
+              <div class="card item-card" id="osCard">
+                <div class="badge">OS do Dia</div>
+                <div class="title">OS do Dia</div>
+                <div class="muted"></div>
               </div>
-              <div class="badge">Widget</div>
-              <div class="title" contenteditable="false">OS do Dia</div>
-              <div class="muted">Prioridades e SLA</div>
-            </div>
-            <div class="card add-card" data-role="adder" title="Adicionar">
-              <div class="plus">+</div>
             </div>
           </div>
-        </div>
 
-        <div id="view-projetos" class="view" hidden>
-          <div class="grid" data-tab-grid="projetos">
-            <div class="card add-card" data-role="adder" title="Adicionar">
-              <div class="plus">+</div>
-            </div>
-          </div>
-        </div>
-
-        <div id="view-areas" class="view" hidden>
-          <div class="grid" data-tab-grid="areas">
-            <div class="card add-card" data-role="adder" title="Adicionar">
-              <div class="plus">+</div>
-            </div>
-          </div>
-        </div>
-
-        <div id="view-recursos" class="view" hidden>
-          <div class="grid" data-tab-grid="recursos">
-            <div class="card add-card" data-role="adder" title="Adicionar">
-              <div class="plus">+</div>
-            </div>
-          </div>
-        </div>
-
-        <div id="view-arquivo" class="view" hidden>
-          <div class="grid" data-tab-grid="arquivo">
-            <div class="card add-card" data-role="adder" title="Adicionar">
-              <div class="plus">+</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ===== HÁBITOS ===== -->
-        <div id="view-habitos" class="view" hidden>
-          <div class="habit-wrap">
-            <div class="habit-head">
-              <div>
-                <div style="font-weight:800; font-size:18px;">Rastreador de Hábitos — Semana <span id="habitWeekLabel"></span></div>
-                <div class="muted">Marque seus hábitos por dia. Os dados ficam salvos no dispositivo.</div>
+          <div id="view-projetos" class="view" hidden>
+            <div class="grid" data-tab-grid="projetos">
+              <div class="card add-card" data-role="adder" title="Adicionar">
+                <div class="plus">+</div>
               </div>
+            </div>
+          </div>
+
+          <div id="view-areas" class="view" hidden>
+            <div class="grid" data-tab-grid="areas">
+              <div class="card add-card" data-role="adder" title="Adicionar">
+                <div class="plus">+</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="view-recursos" class="view" hidden>
+            <div class="grid" data-tab-grid="recursos">
+              <div class="card add-card" data-role="adder" title="Adicionar">
+                <div class="plus">+</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="view-arquivo" class="view" hidden>
+            <div class="grid" data-tab-grid="arquivo"></div>
+          </div>
+
+          <!-- ===== HÁBITOS ===== -->
+          <div id="view-habitos" class="view" hidden>
+            <div class="habit-wrap">
+              <div class="habit-head">
+                <div>
+                  <div style="font-weight: 800; font-size: 18px">
+                    Rastreador de Hábitos — Semana
+                    <span id="habitWeekLabel"></span>
+                  </div>
+                  <div class="muted">
+                    Marque seus hábitos por dia. Os dados ficam salvos no
+                    dispositivo.
+                  </div>
+                </div>
+                <div class="controls">
+                  <input
+                    id="habitName"
+                    type="text"
+                    placeholder="Novo hábito (ex.: Inglês 20min)"
+                    style="
+                      padding: 10px;
+                      border-radius: 12px;
+                      border: 1px solid var(--stroke);
+                      background: #0f1320;
+                      color: #e7edf7;
+                      min-width: 240px;
+                    "
+                  />
+                  <button class="btn" id="addHabitBtn">Adicionar</button>
+                  <button
+                    class="btn ghost"
+                    id="clearWeekBtn"
+                    title="Limpar somente a semana atual"
+                  >
+                    Limpar semana
+                  </button>
+                </div>
+              </div>
+              <div class="habit-list" id="habitList">
+                <div class="habit-empty">
+                  Nenhum hábito ainda. Crie o primeiro acima.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== POMODORO ===== -->
+          <div id="view-pomodoro" class="view" hidden>
+            <div class="pomodoro">
+              <div
+                style="text-align: center; font-weight: 800; font-size: 18px"
+              >
+                Pomodoro
+              </div>
+              <div class="chips">
+                <div class="chip active" data-mode="focus">Foco</div>
+                <div class="chip" data-mode="short">Pausa Curta</div>
+                <div class="chip" data-mode="long">Pausa Longa</div>
+              </div>
+              <div class="display" id="pomoDisplay">25:00</div>
               <div class="controls">
-                <input id="habitName" type="text" placeholder="Novo hábito (ex.: Inglês 20min)" style="padding:10px;border-radius:12px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;min-width:240px;"/>
-                <button class="btn" id="addHabitBtn">Adicionar</button>
-                <button class="btn ghost" id="clearWeekBtn" title="Limpar somente a semana atual">Limpar semana</button>
+                <button class="btn primary" id="pomoStart">Iniciar</button>
+                <button class="btn" id="pomoPause">Pausar</button>
+                <button class="btn ghost" id="pomoReset">Reset</button>
+              </div>
+              <div class="settings">
+                <span>Durações (min):</span>
+                <label
+                  >Foco <input type="number" id="setFocus" min="1" value="25"
+                /></label>
+                <label
+                  >Curta <input type="number" id="setShort" min="1" value="5"
+                /></label>
+                <label
+                  >Longa <input type="number" id="setLong" min="1" value="15"
+                /></label>
+                <button class="btn" id="savePomo">Salvar</button>
+              </div>
+              <div class="stat" id="pomoStat">
+                Sessões concluídas hoje: <strong id="pomoCount">0</strong>
               </div>
             </div>
-            <div class="habit-list" id="habitList">
-              <div class="habit-empty">Nenhum hábito ainda. Crie o primeiro acima.</div>
-            </div>
           </div>
-        </div>
+        </section>
+      </main>
+    </div>
 
-        <!-- ===== POMODORO ===== -->
-        <div id="view-pomodoro" class="view" hidden>
-          <div class="pomodoro">
-            <div style="text-align:center; font-weight:800; font-size:18px;">Pomodoro</div>
-            <div class="chips">
-              <div class="chip active" data-mode="focus">Foco</div>
-              <div class="chip" data-mode="short">Pausa Curta</div>
-              <div class="chip" data-mode="long">Pausa Longa</div>
-            </div>
-            <div class="display" id="pomoDisplay">25:00</div>
-            <div class="controls">
-              <button class="btn primary" id="pomoStart">Iniciar</button>
-              <button class="btn" id="pomoPause">Pausar</button>
-              <button class="btn ghost" id="pomoReset">Reset</button>
-            </div>
-            <div class="settings">
-              <span>Durações (min):</span>
-              <label>Foco <input type="number" id="setFocus" min="1" value="25"></label>
-              <label>Curta <input type="number" id="setShort" min="1" value="5"></label>
-              <label>Longa <input type="number" id="setLong" min="1" value="15"></label>
-              <button class="btn" id="savePomo">Salvar</button>
-            </div>
-            <div class="stat" id="pomoStat">Sessões concluídas hoje: <strong id="pomoCount">0</strong></div>
-          </div>
+    <!-- Modal genérico -->
+    <div
+      class="modal-backdrop"
+      id="modalBackdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-hidden="true"
+    >
+      <div class="modal">
+        <h3 id="modalTitle">Janela</h3>
+        <p class="muted" id="modalContent">
+          Conteúdo placeholder. Depois conectamos a páginas/links reais.
+        </p>
+        <div
+          style="
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 14px;
+          "
+        >
+          <button class="btn ghost" id="closeModal">Fechar</button>
         </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- Modal genérico -->
-  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal">
-      <h3 id="modalTitle">Janela</h3>
-      <p class="muted" id="modalContent">Conteúdo placeholder. Depois conectamos a páginas/links reais.</p>
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;">
-        <button class="btn ghost" id="closeModal">Fechar</button>
       </div>
     </div>
-  </div>
 
-  <div class="toast" id="toast"></div>
+    <div class="toast" id="toast"></div>
 
-  <script>
-    const tabs = document.querySelectorAll('.tab');
-    const views = {
-      dashboard: document.getElementById('view-dashboard'),
-      projetos: document.getElementById('view-projetos'),
-      areas: document.getElementById('view-areas'),
-      recursos: document.getElementById('view-recursos'),
-      arquivo: document.getElementById('view-arquivo'),
-      habitos: document.getElementById('view-habitos'),
-      pomodoro: document.getElementById('view-pomodoro'),
-    };
+    <script>
+      const tabs = document.querySelectorAll(".tab");
+      const views = {
+        dashboard: document.getElementById("view-dashboard"),
+        projetos: document.getElementById("view-projetos"),
+        areas: document.getElementById("view-areas"),
+        recursos: document.getElementById("view-recursos"),
+        arquivo: document.getElementById("view-arquivo"),
+        habitos: document.getElementById("view-habitos"),
+        pomodoro: document.getElementById("view-pomodoro"),
+      };
 
-    const crumb = document.getElementById('crumb');
-    const editBtn = document.getElementById('editBtn');
-    const saveBtn = document.getElementById('saveBtn');
-    const editIndicator = document.getElementById('editIndicator');
-    let editMode = false;
+      const crumb = document.getElementById("crumb");
+      const editBtn = document.getElementById("editBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const editIndicator = document.getElementById("editIndicator");
+      let editMode = false;
 
-    const modalBackdrop = document.getElementById('modalBackdrop');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalContent = document.getElementById('modalContent');
-    const closeModalBtn = document.getElementById('closeModal');
-    const toast = document.getElementById('toast');
+      const modalBackdrop = document.getElementById("modalBackdrop");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalContent = document.getElementById("modalContent");
+      const closeModalBtn = document.getElementById("closeModal");
+      const toast = document.getElementById("toast");
 
-    function showToast(msg){
-      toast.textContent = msg; toast.style.display = 'block';
-      setTimeout(()=> toast.style.display='none', 1800);
-    }
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.style.display = "block";
+        setTimeout(() => (toast.style.display = "none"), 1800);
+      }
 
-    // ---- Abas ----
-    tabs.forEach(t => t.addEventListener('click', () => {
-      document.querySelector('.tab.active')?.classList.remove('active');
-      t.classList.add('active');
-      const tab = t.dataset.tab;
-      crumb.textContent = t.querySelector('span')?.textContent || t.dataset.tab;
-      Object.entries(views).forEach(([k, el]) => el.hidden = (k !== tab));
-    }));
+      // === PARA: Storage e Modelo Único ===
+      function uid(prefix = "id") {
+        return prefix + ":" + Math.random().toString(36).slice(2, 9);
+      }
 
-    // ---- Adicionar item (cartão '+' em todas as abas de grid) ----
-    document.querySelectorAll('[data-role="adder"]').forEach(add => add.addEventListener('click', () => {
-      const grid = add.closest('[data-tab-grid]');
-      const tabKey = grid.getAttribute('data-tab-grid');
-      const name = prompt('Nome do elemento:');
-      if(!name) return;
-      const card = createItemCard(name);
-      grid.insertBefore(card, add);
-      persistGrid(tabKey);
-      showToast('Item criado');
-    }));
+      const DB_KEY = "para:db:v1";
+      // Estrutura inicial do banco
+      function defaultDB() {
+        return {
+          areas: {}, // { [id]: {id, title, desc, projectIds:[] } }
+          projects: {}, // { [id]: {id, title, desc, areaId:null, tasks:[], resourceIds:[], status:'active'|'archived'} }
+          resources: {}, // { [id]: {id, title, type:'link'|'note'|'file', url:'', notes:'', tags:[], areaId:null, projectIds:[] } }
+          archive: {
+            // índices para facilitar listagens
+            projectIds: [],
+            resourceIds: [],
+            areaIds: [],
+          },
+        };
+      }
 
-    function createItemCard(title, color){
-      const div = document.createElement('div');
-      div.className = 'card item-card';
-      if(color) div.dataset.color = color;
-      div.innerHTML = `
+      function loadDB() {
+        try {
+          return JSON.parse(localStorage.getItem(DB_KEY)) || defaultDB();
+        } catch {
+          return defaultDB();
+        }
+      }
+      function saveDB(db) {
+        localStorage.setItem(DB_KEY, JSON.stringify(db));
+      }
+
+      // Helpers
+      function addArea(title, desc = "") {
+        const db = loadDB();
+        const id = uid("area");
+        db.areas[id] = { id, title, desc, projectIds: [] };
+        saveDB(db);
+        return id;
+      }
+      function addProject(title, { areaId = null, desc = "" } = {}) {
+        const db = loadDB();
+        const id = uid("proj");
+        db.projects[id] = {
+          id,
+          title,
+          desc,
+          areaId,
+          tasks: [],
+          resourceIds: [],
+          status: "active",
+        };
+        if (areaId && db.areas[areaId]) db.areas[areaId].projectIds.push(id);
+        saveDB(db);
+        return id;
+      }
+      function addResource(
+        title,
+        {
+          type = "note",
+          url = "",
+          notes = "",
+          tags = [],
+          areaId = null,
+          projectIds = [],
+        } = {},
+      ) {
+        const db = loadDB();
+        const id = uid("res");
+        db.resources[id] = {
+          id,
+          title,
+          type,
+          url,
+          notes,
+          tags,
+          areaId,
+          projectIds,
+        };
+        saveDB(db);
+        return id;
+      }
+      function archiveItem(kind, id) {
+        const db = loadDB();
+        if (kind === "project" && db.projects[id]) {
+          db.projects[id].status = "archived";
+          db.archive.projectIds.push(id);
+        }
+        if (kind === "resource" && db.resources[id]) {
+          db.archive.resourceIds.push(id);
+        }
+        if (kind === "area" && db.areas[id]) {
+          db.archive.areaIds.push(id);
+        }
+        saveDB(db);
+      }
+
+      function restoreItem(kind, id) {
+        const db = loadDB();
+        if (kind === "project" && db.projects[id]) {
+          db.projects[id].status = "active";
+          db.archive.projectIds = db.archive.projectIds.filter(
+            (pid) => pid !== id,
+          );
+        }
+        if (kind === "resource" && db.resources[id]) {
+          db.archive.resourceIds = db.archive.resourceIds.filter(
+            (rid) => rid !== id,
+          );
+        }
+        if (kind === "area" && db.areas[id]) {
+          db.archive.areaIds = db.archive.areaIds.filter((aid) => aid !== id);
+        }
+        saveDB(db);
+      }
+
+      function createArchiveCard(title, type, opts = {}) {
+        const { id = null } = opts;
+        const div = document.createElement("div");
+        div.className = "card item-card";
+        div.dataset.type = type;
+        if (id) div.dataset.id = id;
+        div.innerHTML = `
+    <div class="badge">${
+      type === "project" ? "Projeto" : type === "area" ? "Área" : "Recurso"
+    }</div>
+    <div class="title">${escapeHtml(title)}</div>
+    <button class="btn restore-btn" style="margin-top:8px;">Restaurar</button>
+  `;
+        div.addEventListener("click", (e) => {
+          if (e.target.closest(".restore-btn")) return;
+          if (type === "project") openProjectModal(div);
+          else if (type === "area") openAreaModal(div);
+          else if (type === "resource") openResourceModal(div);
+        });
+        const restoreBtn = div.querySelector(".restore-btn");
+        restoreBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          restoreItem(type, id);
+          const db = loadDB();
+          const tabKey =
+            type === "project"
+              ? "projetos"
+              : type === "area"
+                ? "areas"
+                : "recursos";
+          const grid = document.querySelector(`[data-tab-grid="${tabKey}"]`);
+          if (grid) {
+            const adder = grid.querySelector('[data-role="adder"]');
+            const item =
+              type === "project"
+                ? db.projects[id]
+                : type === "area"
+                  ? db.areas[id]
+                  : db.resources[id];
+            const card =
+              type === "project"
+                ? createProjectCard(item.title, null, { id })
+                : createItemCard(item.title, null, { id, type });
+            grid.insertBefore(card, adder);
+            persistGrid(tabKey);
+          }
+          renderArchive();
+          showToast("Item restaurado");
+        });
+        return div;
+      }
+
+      function renderArchive() {
+        const grid = document.querySelector('[data-tab-grid="arquivo"]');
+        if (!grid) return;
+        grid.querySelectorAll(".item-card").forEach((n) => n.remove());
+        const db = loadDB();
+        const stored = JSON.parse(localStorage.getItem("grid:arquivo") || "[]");
+        const items = [
+          ...db.archive.projectIds.map((id) => ({ id, type: "project" })),
+          ...db.archive.areaIds.map((id) => ({ id, type: "area" })),
+          ...db.archive.resourceIds.map((id) => ({ id, type: "resource" })),
+        ];
+        items.sort((a, b) => {
+          const ia = stored.findIndex((s) => s.id === a.id);
+          const ib = stored.findIndex((s) => s.id === b.id);
+          if (ia === -1 && ib === -1) return 0;
+          if (ia === -1) return 1;
+          if (ib === -1) return -1;
+          return ia - ib;
+        });
+        items.forEach(({ id, type }) => {
+          const data =
+            type === "project"
+              ? db.projects[id]
+              : type === "area"
+                ? db.areas[id]
+                : db.resources[id];
+          if (!data) return;
+          const card = createArchiveCard(data.title, type, { id });
+          const storedItem = stored.find((s) => s.id === id);
+          const color = storedItem?.color;
+          if (color)
+            card.style.boxShadow = `inset 0 0 0 1px ${color}55, var(--shadow)`;
+          grid.appendChild(card);
+        });
+        persistGrid("arquivo");
+      }
+
+      function renderDashboard() {
+        const card = document.getElementById("indicadoresCard");
+        if (!card) return;
+        const db = loadDB();
+        const activeProjects = Object.values(db.projects).filter(
+          (p) => p.status !== "archived",
+        ).length;
+        const openProj = Object.values(db.projects).filter(
+          (p) => p.status !== "archived" && p.tasks.some((t) => !t.done),
+        ).length;
+        const resCount = Object.keys(db.resources).length;
+        card.querySelector(".muted").innerHTML =
+          `Projetos ativos: ${activeProjects}<br>Projetos com tarefas abertas: ${openProj}<br>Recursos: ${resCount}`;
+      }
+
+      // ---- Abas ----
+      tabs.forEach((t) =>
+        t.addEventListener("click", () => {
+          document.querySelector(".tab.active")?.classList.remove("active");
+          t.classList.add("active");
+          const tab = t.dataset.tab;
+          crumb.textContent =
+            t.querySelector("span")?.textContent || t.dataset.tab;
+          Object.entries(views).forEach(([k, el]) => (el.hidden = k !== tab));
+          if (tab === "dashboard") renderDashboard();
+          if (tab === "arquivo") renderArchive();
+        }),
+      );
+
+      // ---- Adicionar item (cartão '+' em todas as abas de grid) ----
+      document.querySelectorAll('[data-role="adder"]').forEach((add) =>
+        add.addEventListener("click", () => {
+          const grid = add.closest("[data-tab-grid]");
+          const tabKey = grid.getAttribute("data-tab-grid");
+          const name = prompt("Nome do elemento:");
+          if (!name) return;
+
+          let card;
+          if (tabKey === "projetos") {
+            const newId = addProject(name, {});
+            card = createProjectCard(name, null, { id: newId });
+          } else if (tabKey === "areas") {
+            const newId = addArea(name, "");
+            card = createItemCard(name, null, { id: newId, type: "area" });
+          } else if (tabKey === "recursos") {
+            const newId = addResource(name, { type: "note" });
+            card = createItemCard(name, null, { id: newId, type: "resource" });
+          } else {
+            // dashboard/arquivo: item avulso
+            card = createItemCard(name);
+          }
+
+          grid.insertBefore(card, add);
+          persistGrid(tabKey);
+          showToast("Item criado");
+        }),
+      );
+
+      function createItemCard(title, color, opts = {}) {
+        const { id = null, type = "item" } = opts;
+        const div = document.createElement("div");
+        div.className = "card item-card";
+        if (color) div.dataset.color = color;
+        div.dataset.type = type;
+        if (id) div.dataset.id = id;
+        div.innerHTML = `
         <div class="handle" aria-hidden="true">
           <button class="rename" title="Renomear">✏️</button>
           <button class="paint" title="Cor">🎨</button>
           <button class="remove" title="Remover">🗑️</button>
         </div>
-        <div class="badge">Janela</div>
+        <div class="badge">${type === "resource" ? "Recurso" : type === "area" ? "Área" : "Janela"}</div>
         <div class="title" contenteditable="false">${escapeHtml(title)}</div>
         <div class="muted">Clique para abrir</div>
       `;
-      hookItemCard(div);
-      return div;
-    }
+        hookItemCard(div);
+        return div;
+      }
 
-    function hookItemCard(card){
-      card.addEventListener('click', (e) => {
-        if(editMode) return; // em edição, não abre modal
-        if(e.target.closest('.handle')) return;
-        const title = card.querySelector('.title')?.textContent || 'Janela';
+      function createProjectCard(title, color, opts = {}) {
+        const { id = null } = opts;
+        const div = document.createElement("div");
+        div.className = "card item-card project-card";
+        div.dataset.type = "project";
+        if (color) div.dataset.color = color;
+        if (id) div.dataset.id = id;
+        div.innerHTML = `
+        <div class="handle" aria-hidden="true">
+          <button class="rename" title="Renomear">✏️</button>
+          <button class="paint" title="Cor">🎨</button>
+          <button class="remove" title="Remover">🗑️</button>
+        </div>
+        <div class="badge">Projeto</div>
+        <div class="title" contenteditable="false">${escapeHtml(title)}</div>
+        <div class="muted">Gerencie tarefas</div>
+      `;
+        hookItemCard(div);
+        return div;
+      }
+
+      function hookItemCard(card) {
+        card.addEventListener("click", (e) => {
+          if (editMode) return; // em edição, não abre modal
+          if (e.target.closest(".handle")) return;
+          if (card.dataset.type === "project") {
+            openProjectModal(card);
+            return;
+          }
+          if (card.dataset.type === "area") {
+            openAreaModal(card);
+            return;
+          }
+          if (card.dataset.type === "resource") {
+            openResourceModal(card);
+            return;
+          }
+          const title = card.querySelector(".title")?.textContent || "Janela";
+          modalTitle.textContent = title;
+          modalContent.textContent = `Conteúdos de “${title}”. Depois conectamos a uma página real ou link.`;
+          modalBackdrop.style.display = "flex";
+          modalBackdrop.setAttribute("aria-hidden", "false");
+        });
+
+        const handle = card.querySelector(".handle");
+        const titleEl = card.querySelector(".title");
+        const renameBtn = handle.querySelector(".rename");
+        const paintBtn = handle.querySelector(".paint");
+        const removeBtn = handle.querySelector(".remove");
+
+        renameBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const newName = prompt("Novo nome:", titleEl.textContent?.trim());
+          if (newName) {
+            titleEl.textContent = newName;
+            const id = card.dataset.id;
+            const type = card.dataset.type;
+            const db = loadDB();
+            if (type === "project" && db.projects[id])
+              db.projects[id].title = newName;
+            if (type === "area" && db.areas[id])
+              db.areas[id].title = newName;
+            if (type === "resource" && db.resources[id])
+              db.resources[id].title = newName;
+            saveDB(db);
+            persistGrid(activeTabKey());
+          }
+        });
+
+        paintBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const newColor = prompt(
+            "Cor (hex, p.ex. #6d7cff) ou vazio para padrão:",
+            card.dataset.color || "",
+          );
+          if (newColor) {
+            card.dataset.color = newColor;
+            card.style.boxShadow = `inset 0 0 0 1px ${newColor}55, var(--shadow)`;
+          } else {
+            delete card.dataset.color;
+            card.style.boxShadow = "var(--shadow)";
+          }
+          persistGrid(activeTabKey());
+        });
+
+        removeBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (confirm("Remover este item?")) {
+            card.remove();
+            persistGrid(activeTabKey());
+            showToast("Item removido");
+          }
+        });
+      }
+
+      function openProjectModal(card) {
+        const title = card.querySelector(".title")?.textContent || "Projeto";
+        const id = card.dataset.id;
+        const db = loadDB();
+        const project = db.projects[id];
         modalTitle.textContent = title;
-        modalContent.textContent = `Conteúdos de “${title}”. Depois conectamos a uma página real ou link.`;
-        modalBackdrop.style.display = 'flex';
-        modalBackdrop.setAttribute('aria-hidden','false');
-      });
+        modalContent.innerHTML = `
+  <div style="display:grid; gap:10px;">
+    <input id="projDesc" type="text" placeholder="Descrição" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
 
-      const handle = card.querySelector('.handle');
-      const titleEl = card.querySelector('.title');
-      const renameBtn = handle.querySelector('.rename');
-      const paintBtn = handle.querySelector('.paint');
-      const removeBtn = handle.querySelector('.remove');
+    <div style="display:flex; gap:8px; align-items:center;">
+      <label>Área:
+        <select id="projArea" style="padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;">
+          <option value="">(sem área)</option>
+          ${Object.values(db.areas)
+            .map(
+              (a) => `<option value="${a.id}">${escapeHtml(a.title)}</option>`,
+            )
+            .join("")}
+        </select>
+      </label>
+      <button id="archiveProj" class="btn ghost">Arquivar</button>
+    </div>
 
-      renameBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const newName = prompt('Novo nome:', titleEl.textContent?.trim());
-        if(newName){ titleEl.textContent = newName; persistGrid(activeTabKey()); }
-      });
+    <div>
+      <div style="font-weight:600;margin:6px 0;">Tarefas</div>
+      <ul id="taskList" style="list-style:none;padding:0;margin:0 0 10px 0;"></ul>
+      <div style="display:flex;gap:8px;">
+        <input id="taskInput" type="text" placeholder="Nova tarefa" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
+        <button id="addTaskBtn" class="btn">Adicionar</button>
+      </div>
+    </div>
 
-      paintBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const newColor = prompt('Cor (hex, p.ex. #6d7cff) ou vazio para padrão:', card.dataset.color || '');
-        if(newColor){ card.dataset.color = newColor; card.style.boxShadow = `inset 0 0 0 1px ${newColor}55, var(--shadow)`; }
-        else { delete card.dataset.color; card.style.boxShadow = 'var(--shadow)'; }
-        persistGrid(activeTabKey());
-      });
+    <div>
+      <div style="font-weight:600;margin:6px 0;">Recursos anexados</div>
+      <ul id="resList" style="list-style:none;padding:0;margin:0 0 10px 0;"></ul>
+      <div style="display:flex;gap:8px;">
+        <select id="resPicker" style="flex:1; padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;">
+          <option value="">(Selecione um recurso existente)</option>
+          ${Object.values(db.resources)
+            .map(
+              (r) => `<option value="${r.id}">${escapeHtml(r.title)}</option>`,
+            )
+            .join("")}
+        </select>
+        <button id="attachResBtn" class="btn">Anexar</button>
+      </div>
+    </div>
+    <button id="deleteProj" class="btn danger">Excluir projeto</button>
+  </div>
+`;
+        const descEl = modalContent.querySelector("#projDesc");
+        const areaSel = modalContent.querySelector("#projArea");
+        const taskList = modalContent.querySelector("#taskList");
+        const taskInput = modalContent.querySelector("#taskInput");
+        const addTaskBtn = modalContent.querySelector("#addTaskBtn");
+        const resList = modalContent.querySelector("#resList");
+        const resPicker = modalContent.querySelector("#resPicker");
+        const attachResBtn = modalContent.querySelector("#attachResBtn");
+        const archiveBtn = modalContent.querySelector("#archiveProj");
+        const deleteBtn = modalContent.querySelector("#deleteProj");
 
-      removeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if(confirm('Remover este item?')){ card.remove(); persistGrid(activeTabKey()); showToast('Item removido'); }
-      });
-    }
+        descEl.value = project.desc || "";
+        areaSel.value = project.areaId || "";
+        renderTasks();
+        renderRes();
 
-    closeModalBtn.addEventListener('click', () => {
-      modalBackdrop.style.display = 'none';
-      modalBackdrop.setAttribute('aria-hidden','true');
-    });
-    modalBackdrop.addEventListener('click', (e) => { if(e.target === modalBackdrop) closeModalBtn.click(); });
-
-    // ---- Edit mode (arrastar, renomear, pintar, remover) ----
-    editBtn.addEventListener('click', () => toggleEdit());
-    function toggleEdit(force){
-      editMode = force !== undefined ? !!force : !editMode;
-      editIndicator.hidden = !editMode;
-      editBtn.textContent = editMode ? 'Sair do modo de edição' : 'Editar';
-      document.querySelectorAll('.item-card').forEach(card => setCardEditable(card, editMode));
-    }
-
-    function setCardEditable(card, on){
-      const title = card.querySelector('.title');
-      title.contentEditable = on ? 'true' : 'false';
-      card.classList.toggle('editable', on);
-      card.classList.toggle('draggable', on);
-      card.setAttribute('draggable', on ? 'true' : 'false');
-    }
-
-    // Arrastar para reordenar (grids)
-    document.querySelectorAll('[data-tab-grid]').forEach(grid => {
-      grid.addEventListener('dragstart', (e) => {
-        if(!editMode) { e.preventDefault(); return; }
-        const card = e.target.closest('.item-card');
-        if(!card) return;
-        card.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', 'drag');
-      });
-      grid.addEventListener('dragend', (e) => {
-        const card = e.target.closest('.item-card');
-        card?.classList.remove('dragging');
-        persistGrid(grid.getAttribute('data-tab-grid'));
-      });
-      grid.addEventListener('dragover', (e) => {
-        if(!editMode) return; e.preventDefault();
-        const dragging = grid.querySelector('.dragging');
-        const after = getCardAfterPointer(grid, e.clientY, e.clientX);
-        const adder = grid.querySelector('[data-role="adder"]');
-        if(!dragging) return;
-        if(after == null) grid.insertBefore(dragging, adder);
-        else grid.insertBefore(dragging, after);
-      });
-    });
-
-    function getCardAfterPointer(grid, y, x){
-      const cards = [...grid.querySelectorAll('.item-card:not(.dragging)')];
-      return cards.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - (box.top + box.height / 2);
-        if(offset < 0 && offset > closest.offset){ return { offset, element: child }; }
-        return closest;
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
-    }
-
-    // ---- Persistência por aba (grids) ----
-    function activeTabKey(){
-      return document.querySelector('.tab.active')?.dataset.tab || 'dashboard';
-    }
-
-    function persistGrid(tabKey){
-      const grid = document.querySelector(`[data-tab-grid="${tabKey}"]`);
-      if(!grid) return;
-      const items = [...grid.querySelectorAll('.item-card')].map(c => ({
-        title: c.querySelector('.title')?.textContent?.trim() || 'Item',
-        color: c.dataset.color || null
-      }));
-      localStorage.setItem(`grid:${tabKey}`, JSON.stringify(items));
-    }
-
-    function loadGrid(tabKey){
-      const grid = document.querySelector(`[data-tab-grid="${tabKey}"]`);
-      if(!grid) return;
-      const adder = grid.querySelector('[data-role="adder"]');
-      const raw = localStorage.getItem(`grid:${tabKey}`);
-      if(!raw) return;
-      try {
-        const items = JSON.parse(raw);
-        [...grid.querySelectorAll('.item-card')].forEach(n => n.remove());
-        items.forEach(({title, color}) => {
-          const card = createItemCard(title, color);
-          if(color) card.style.boxShadow = `inset 0 0 0 1px ${color}55, var(--shadow)`;
-          grid.insertBefore(card, adder);
+        descEl.addEventListener("change", () => {
+          const db = loadDB();
+          db.projects[id].desc = descEl.value;
+          saveDB(db);
         });
-      } catch(err){ console.warn('Erro ao carregar grid', err); }
-    }
 
-    ['dashboard','projetos','areas','recursos','arquivo'].forEach(loadGrid);
+        areaSel.addEventListener("change", () => {
+          const db = loadDB();
+          const prev = db.projects[id].areaId;
+          const next = areaSel.value || null;
+          if (prev && db.areas[prev])
+            db.areas[prev].projectIds = db.areas[prev].projectIds.filter(
+              (pid) => pid !== id,
+            );
+          if (next && db.areas[next]) db.areas[next].projectIds.push(id);
+          db.projects[id].areaId = next;
+          saveDB(db);
+        });
 
-    // =================== HÁBITOS ===================
-    const habitListEl = document.getElementById('habitList');
-    const habitNameEl = document.getElementById('habitName');
-    const addHabitBtn = document.getElementById('addHabitBtn');
-    const clearWeekBtn = document.getElementById('clearWeekBtn');
-    const habitWeekLabel = document.getElementById('habitWeekLabel');
-
-    const DAYS = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
-
-    function startOfWeek(d = new Date()){
-      const n = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-      const day = (n.getUTCDay() + 6) % 7; // 0=Seg
-      n.setUTCDate(n.getUTCDate() - day);
-      n.setUTCHours(0,0,0,0);
-      return n; // Monday UTC
-    }
-    function fmtISO(d){ return d.toISOString().slice(0,10); }
-    function weekKey(date=new Date()){
-      const start = startOfWeek(date);
-      const end = new Date(start);
-      end.setUTCDate(end.getUTCDate()+6);
-      habitWeekLabel.textContent = `${fmtISO(start)} a ${fmtISO(end)}`;
-      return `habits:${fmtISO(start)}`;
-    }
-
-    function loadHabits(){
-      const key = 'habits:list';
-      try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; }
-    }
-    function saveHabits(list){ localStorage.setItem('habits:list', JSON.stringify(list)); }
-
-    function loadChecks(){
-      const data = localStorage.getItem(weekKey());
-      try { return data ? JSON.parse(data) : {}; } catch { return {}; }
-    }
-    function saveChecks(obj){ localStorage.setItem(weekKey(), JSON.stringify(obj)); }
-
-    function renderHabits(){
-      const habits = loadHabits();
-      const checks = loadChecks();
-      habitListEl.innerHTML = '';
-      if(habits.length === 0){
-        const empty = document.createElement('div');
-        empty.className = 'habit-empty';
-        empty.textContent = 'Nenhum hábito ainda. Crie o primeiro acima.';
-        habitListEl.appendChild(empty);
-        return;
-      }
-
-      const header = document.createElement('div');
-      header.className = 'habit-row';
-      header.innerHTML = `<div class="name muted">Hábito</div>${DAYS.map(d=>`<div class="muted" style="text-align:center;">${d}</div>`).join('')}<div class="muted pct">%</div>`;
-      habitListEl.appendChild(header);
-
-      habits.forEach((h, idx) => {
-        const row = document.createElement('div');
-        row.className = 'habit-row';
-        row.dataset.index = idx;
-        const id = `h${idx}`;
-        row.innerHTML = `<div class="name">${escapeHtml(h)}</div>` + DAYS.map((d, di) => {
-          const checked = checks[id]?.includes(di) ? 'checked' : '';
-          return `<div class="day ${checked}" data-di="${di}">${checked ? '✔' : ''}</div>`;
-        }).join('') + `<div class="pct" data-pct>0%</div>`;
-
-        // toggle
-        row.querySelectorAll('.day').forEach(cell => {
-          cell.addEventListener('click', () => {
-            const di = Number(cell.dataset.di);
-            const obj = loadChecks();
-            obj[id] = obj[id] || [];
-            const i = obj[id].indexOf(di);
-            if(i>=0){ obj[id].splice(i,1); cell.classList.remove('checked'); cell.textContent=''; }
-            else { obj[id].push(di); cell.classList.add('checked'); cell.textContent='✔'; }
-            saveChecks(obj);
-            updatePct(row, obj[id]);
+        function renderTasks() {
+          const db = loadDB();
+          const proj = db.projects[id];
+          taskList.innerHTML = "";
+          proj.tasks.forEach((t, i) => {
+            const li = document.createElement("li");
+            li.style.display = "flex";
+            li.style.alignItems = "center";
+            li.style.gap = "6px";
+            li.style.marginBottom = "4px";
+            li.innerHTML = `<input type="checkbox" ${t.done ? "checked" : ""}> <span>${escapeHtml(t.text)}</span>`;
+            const checkbox = li.querySelector("input");
+            checkbox.addEventListener("change", () => {
+              const db = loadDB();
+              db.projects[id].tasks[i].done = checkbox.checked;
+              saveDB(db);
+            });
+            taskList.appendChild(li);
           });
+        }
+
+        addTaskBtn.addEventListener("click", () => {
+          const text = (taskInput.value || "").trim();
+          if (!text) return;
+          const db = loadDB();
+          db.projects[id].tasks.push({ text, done: false });
+          saveDB(db);
+          taskInput.value = "";
+          renderTasks();
         });
 
-        // initial pct
-        updatePct(row, checks[id] || []);
-        habitListEl.appendChild(row);
-      });
+        function renderRes() {
+          const db = loadDB();
+          const proj = db.projects[id];
+          resList.innerHTML = "";
+          proj.resourceIds.forEach((rid) => {
+            const r = db.resources[rid];
+            if (!r) return;
+            const li = document.createElement("li");
+            li.textContent = r.title + (r.url ? ` — ${r.url}` : "");
+            resList.appendChild(li);
+          });
+        }
 
-      // Remover hábito (duplo clique no nome)
-      habitListEl.querySelectorAll('.habit-row .name').forEach((el, i) => {
-        el.title = 'Duplo clique para renomear / remover';
-        el.addEventListener('dblclick', () => {
-          const habits = loadHabits();
-          const newName = prompt('Renomear hábito (deixe vazio para remover):', habits[i]);
-          if(newName === null) return;
-          if(newName.trim() === ''){ habits.splice(i,1); saveHabits(habits); renderHabits(); return; }
-          habits[i] = newName.trim(); saveHabits(habits); renderHabits();
+        attachResBtn.addEventListener("click", () => {
+          const rid = resPicker.value;
+          if (!rid) return;
+          const db = loadDB();
+          const proj = db.projects[id];
+          if (!proj.resourceIds.includes(rid)) proj.resourceIds.push(rid);
+          if (!db.resources[rid].projectIds.includes(id))
+            db.resources[rid].projectIds.push(id);
+          saveDB(db);
+          renderRes();
         });
-      });
-    }
 
-    function updatePct(row, arr){
-      const pct = Math.round((arr.length / 7) * 100);
-      row.querySelector('[data-pct]').textContent = pct + '%';
-    }
+        archiveBtn.addEventListener("click", () => {
+          if (confirm("Arquivar este projeto?")) {
+            archiveItem("project", id);
+            card.remove();
+            persistGrid("projetos");
+            renderArchive();
+            showToast("Projeto arquivado");
+            modalBackdrop.style.display = "none";
+          }
+        });
 
-    addHabitBtn?.addEventListener('click', () => {
-      const name = (habitNameEl.value || '').trim();
-      if(!name) return;
-      const list = loadHabits();
-      list.push(name);
-      saveHabits(list);
-      habitNameEl.value = '';
-      renderHabits();
-      showToast('Hábito adicionado');
-    });
+        deleteBtn.addEventListener("click", () => {
+          if (confirm("Excluir definitivamente este projeto?")) {
+            const db = loadDB();
+            const proj = db.projects[id];
+            if (proj.areaId && db.areas[proj.areaId]) {
+              db.areas[proj.areaId].projectIds = db.areas[proj.areaId].projectIds.filter(
+                (pid) => pid !== id,
+              );
+            }
+            proj.resourceIds.forEach((rid) => {
+              if (db.resources[rid]) {
+                db.resources[rid].projectIds = db.resources[rid].projectIds.filter(
+                  (pid) => pid !== id,
+                );
+              }
+            });
+            delete db.projects[id];
+            db.archive.projectIds = db.archive.projectIds.filter(
+              (pid) => pid !== id,
+            );
+            saveDB(db);
+            card.remove();
+            persistGrid("projetos");
+            renderArchive();
+            showToast("Projeto excluído");
+            modalBackdrop.style.display = "none";
+          }
+        });
 
-    clearWeekBtn?.addEventListener('click', () => {
-      if(confirm('Limpar marcações da semana atual?')){
-        saveChecks({});
-        renderHabits();
+        modalBackdrop.style.display = "flex";
+        modalBackdrop.setAttribute("aria-hidden", "false");
       }
-    });
 
-    // Inicializa semana
-    weekKey();
-    renderHabits();
+      function openAreaModal(card) {
+        const title = card.querySelector(".title")?.textContent || "Área";
+        const id = card.dataset.id;
+        const db = loadDB();
+        const area = db.areas[id];
+        modalTitle.textContent = title;
+        modalContent.innerHTML = `
+  <div style="display:grid; gap:10px;">
+    <input id="areaDesc" type="text" placeholder="Descrição" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
+    <div>
+      <div style="font-weight:600;margin:6px 0;">Projetos</div>
+      <ul id="areaProjList" style="list-style:none;padding:0;margin:0 0 10px 0;"></ul>
+    </div>
+    <button id="archiveArea" class="btn ghost">Arquivar área</button>
+    <button id="deleteArea" class="btn danger">Excluir área</button>
+  </div>
+`;
+        const descEl = modalContent.querySelector("#areaDesc");
+        const projList = modalContent.querySelector("#areaProjList");
+        const archiveBtn = modalContent.querySelector("#archiveArea");
+        const deleteBtn = modalContent.querySelector("#deleteArea");
 
-    // =================== POMODORO ===================
-    const chips = document.querySelectorAll('.chip');
-    const display = document.getElementById('pomoDisplay');
-    const startBtn = document.getElementById('pomoStart');
-    const pauseBtn = document.getElementById('pomoPause');
-    const resetBtn = document.getElementById('pomoReset');
-    const setFocus = document.getElementById('setFocus');
-    const setShort = document.getElementById('setShort');
-    const setLong = document.getElementById('setLong');
-    const savePomo = document.getElementById('savePomo');
-    const pomoCountEl = document.getElementById('pomoCount');
+        descEl.value = area.desc || "";
+        renderProjects();
 
-    let timer = null; let remaining = 25*60; let mode = 'focus';
+        descEl.addEventListener("change", () => {
+          const db = loadDB();
+          db.areas[id].desc = descEl.value;
+          saveDB(db);
+        });
 
-    function loadPomo(){
-      try { return JSON.parse(localStorage.getItem('pomo:settings')) || {focus:25, short:5, long:15, countDate:'', count:0}; } catch { return {focus:25, short:5, long:15, countDate:'', count:0}; }
-    }
-    function savePomoSettings(obj){ localStorage.setItem('pomo:settings', JSON.stringify(obj)); }
+        function renderProjects() {
+          const db = loadDB();
+          const a = db.areas[id];
+          projList.innerHTML = "";
+          a.projectIds.forEach((pid) => {
+            const p = db.projects[pid];
+            if (!p) return;
+            const li = document.createElement("li");
+            li.textContent = p.title;
+            projList.appendChild(li);
+          });
+        }
 
-    function syncSettingsFromStore(){
-      const s = loadPomo();
-      setFocus.value = s.focus; setShort.value = s.short; setLong.value = s.long;
-      updateCount(s);
-      applyMode(mode, false);
-    }
+        archiveBtn.addEventListener("click", () => {
+          if (confirm("Arquivar esta área?")) {
+            archiveItem("area", id);
+            card.remove();
+            persistGrid("areas");
+            renderArchive();
+            showToast("Área arquivada");
+            modalBackdrop.style.display = "none";
+          }
+        });
 
-    function applyMode(m, reset=true){
-      mode = m;
-      chips.forEach(c => c.classList.toggle('active', c.dataset.mode===m));
-      const s = loadPomo();
-      const mins = m==='focus'? s.focus : m==='short'? s.short : s.long;
-      remaining = mins * 60;
-      if(reset) updateDisplay(); else display.textContent = fmtTime(remaining);
-    }
+        deleteBtn.addEventListener("click", () => {
+          if (confirm("Excluir definitivamente esta área?")) {
+            const db = loadDB();
+            const a = db.areas[id];
+            a.projectIds.forEach((pid) => {
+              if (db.projects[pid]) db.projects[pid].areaId = null;
+            });
+            delete db.areas[id];
+            db.archive.areaIds = db.archive.areaIds.filter((aid) => aid !== id);
+            saveDB(db);
+            card.remove();
+            persistGrid("areas");
+            renderArchive();
+            showToast("Área excluída");
+            modalBackdrop.style.display = "none";
+          }
+        });
 
-    function fmtTime(sec){
-      const m = Math.floor(sec/60).toString().padStart(2,'0');
-      const s = Math.floor(sec%60).toString().padStart(2,'0');
-      return `${m}:${s}`;
-    }
-    function updateDisplay(){ display.textContent = fmtTime(remaining); }
+        modalBackdrop.style.display = "flex";
+        modalBackdrop.setAttribute("aria-hidden", "false");
+      }
 
-    chips.forEach(c => c.addEventListener('click', () => { stopTimer(); applyMode(c.dataset.mode); }));
+      function openResourceModal(card) {
+        const title = card.querySelector(".title")?.textContent || "Recurso";
+        const id = card.dataset.id;
+        const db = loadDB();
+        const resource = db.resources[id];
+        modalTitle.textContent = title;
+        modalContent.innerHTML = `
+  <div style="display:grid; gap:10px;">
+    <label>Tipo:
+      <select id="resType" style="padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;">
+        <option value="note">Nota</option>
+        <option value="link">Link</option>
+        <option value="file">Arquivo</option>
+      </select>
+    </label>
+    <input id="resUrl" type="text" placeholder="URL" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
+    <textarea id="resNotes" placeholder="Notas" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"></textarea>
+    <input id="resTags" type="text" placeholder="Tags (separadas por vírgula)" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
+    <label>Área:
+      <select id="resArea" style="padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;">
+        <option value="">(sem área)</option>
+        ${Object.values(db.areas)
+          .map((a) => `<option value="${a.id}">${escapeHtml(a.title)}</option>`)
+          .join("")}
+      </select>
+    </label>
+    <div>
+      <div style="font-weight:600;margin:6px 0;">Projetos associados</div>
+      <div id="resProjChecks" style="display:flex;flex-direction:column;gap:4px;"></div>
+    </div>
+    <button id="archiveRes" class="btn ghost">Arquivar recurso</button>
+    <button id="deleteRes" class="btn danger">Excluir recurso</button>
+  </div>
+`;
+        const typeSel = modalContent.querySelector("#resType");
+        const urlEl = modalContent.querySelector("#resUrl");
+        const notesEl = modalContent.querySelector("#resNotes");
+        const tagsEl = modalContent.querySelector("#resTags");
+        const areaSel = modalContent.querySelector("#resArea");
+        const projChecks = modalContent.querySelector("#resProjChecks");
+        const archiveBtn = modalContent.querySelector("#archiveRes");
+        const deleteBtn = modalContent.querySelector("#deleteRes");
 
-    function tick(){
-      if(remaining>0){ remaining--; updateDisplay(); }
-      else { // terminou ciclo
-        stopTimer();
-        if(mode==='focus'){
-          // incrementa contagem diária
-          const s = loadPomo();
-          const today = new Date().toISOString().slice(0,10);
-          if(s.countDate !== today){ s.countDate = today; s.count = 0; }
-          s.count += 1; savePomoSettings(s); updateCount(s);
-          // muda para pausa curta por padrão
-          applyMode('short');
-          showToast('Foco concluído! Pausa curta.');
-        } else {
-          applyMode('focus');
-          showToast('Pausa concluída! De volta ao foco.');
+        typeSel.value = resource.type || "note";
+        urlEl.value = resource.url || "";
+        notesEl.value = resource.notes || "";
+        tagsEl.value = resource.tags ? resource.tags.join(", ") : "";
+        areaSel.value = resource.areaId || "";
+        renderProjChecks();
+
+        typeSel.addEventListener("change", () => {
+          const db = loadDB();
+          db.resources[id].type = typeSel.value;
+          saveDB(db);
+        });
+
+        urlEl.addEventListener("change", () => {
+          const db = loadDB();
+          db.resources[id].url = urlEl.value;
+          saveDB(db);
+        });
+
+        notesEl.addEventListener("change", () => {
+          const db = loadDB();
+          db.resources[id].notes = notesEl.value;
+          saveDB(db);
+        });
+
+        tagsEl.addEventListener("change", () => {
+          const db = loadDB();
+          db.resources[id].tags = tagsEl.value
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean);
+          saveDB(db);
+        });
+
+        areaSel.addEventListener("change", () => {
+          const db = loadDB();
+          db.resources[id].areaId = areaSel.value || null;
+          saveDB(db);
+        });
+
+        function renderProjChecks() {
+          const db = loadDB();
+          projChecks.innerHTML = "";
+          Object.values(db.projects).forEach((p) => {
+            const label = document.createElement("label");
+            label.style.display = "flex";
+            label.style.alignItems = "center";
+            label.style.gap = "4px";
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.value = p.id;
+            cb.checked = resource.projectIds.includes(p.id);
+            cb.addEventListener("change", () => {
+              const db = loadDB();
+              const res = db.resources[id];
+              if (cb.checked) {
+                if (!res.projectIds.includes(p.id)) res.projectIds.push(p.id);
+                if (!db.projects[p.id].resourceIds.includes(id))
+                  db.projects[p.id].resourceIds.push(id);
+              } else {
+                res.projectIds = res.projectIds.filter((pid) => pid !== p.id);
+                db.projects[p.id].resourceIds = db.projects[
+                  p.id
+                ].resourceIds.filter((rid) => rid !== id);
+              }
+              saveDB(db);
+            });
+            label.appendChild(cb);
+            label.appendChild(document.createTextNode(p.title));
+            projChecks.appendChild(label);
+          });
+        }
+
+        archiveBtn.addEventListener("click", () => {
+          if (confirm("Arquivar este recurso?")) {
+            archiveItem("resource", id);
+            card.remove();
+            persistGrid("recursos");
+            renderArchive();
+            showToast("Recurso arquivado");
+            modalBackdrop.style.display = "none";
+          }
+        });
+
+        deleteBtn.addEventListener("click", () => {
+          if (confirm("Excluir definitivamente este recurso?")) {
+            const db = loadDB();
+            const res = db.resources[id];
+            res.projectIds.forEach((pid) => {
+              if (db.projects[pid]) {
+                db.projects[pid].resourceIds = db.projects[pid].resourceIds.filter(
+                  (rid) => rid !== id,
+                );
+              }
+            });
+            delete db.resources[id];
+            db.archive.resourceIds = db.archive.resourceIds.filter(
+              (rid) => rid !== id,
+            );
+            saveDB(db);
+            card.remove();
+            persistGrid("recursos");
+            renderArchive();
+            showToast("Recurso excluído");
+            modalBackdrop.style.display = "none";
+          }
+        });
+
+        modalBackdrop.style.display = "flex";
+        modalBackdrop.setAttribute("aria-hidden", "false");
+      }
+
+      closeModalBtn.addEventListener("click", () => {
+        modalBackdrop.style.display = "none";
+        modalBackdrop.setAttribute("aria-hidden", "true");
+      });
+      modalBackdrop.addEventListener("click", (e) => {
+        if (e.target === modalBackdrop) closeModalBtn.click();
+      });
+
+      // ---- Edit mode (arrastar, renomear, pintar, remover) ----
+      editBtn.addEventListener("click", () => toggleEdit());
+      function toggleEdit(force) {
+        editMode = force !== undefined ? !!force : !editMode;
+        editIndicator.hidden = !editMode;
+        editBtn.textContent = editMode ? "Sair do modo de edição" : "Editar";
+        document
+          .querySelectorAll(".item-card")
+          .forEach((card) => setCardEditable(card, editMode));
+      }
+
+      function setCardEditable(card, on) {
+        const title = card.querySelector(".title");
+        title.contentEditable = on ? "true" : "false";
+        card.classList.toggle("editable", on);
+        card.classList.toggle("draggable", on);
+        card.setAttribute("draggable", on ? "true" : "false");
+      }
+
+      // Arrastar para reordenar (grids)
+      document.querySelectorAll("[data-tab-grid]").forEach((grid) => {
+        grid.addEventListener("dragstart", (e) => {
+          if (!editMode) {
+            e.preventDefault();
+            return;
+          }
+          const card = e.target.closest(".item-card");
+          if (!card) return;
+          card.classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData("text/plain", "drag");
+        });
+        grid.addEventListener("dragend", (e) => {
+          const card = e.target.closest(".item-card");
+          card?.classList.remove("dragging");
+          persistGrid(grid.getAttribute("data-tab-grid"));
+        });
+        grid.addEventListener("dragover", (e) => {
+          if (!editMode) return;
+          e.preventDefault();
+          const dragging = grid.querySelector(".dragging");
+          const after = getCardAfterPointer(grid, e.clientY, e.clientX);
+          const adder = grid.querySelector('[data-role="adder"]');
+          if (!dragging) return;
+          if (after == null) grid.insertBefore(dragging, adder);
+          else grid.insertBefore(dragging, after);
+        });
+      });
+
+      function getCardAfterPointer(grid, y, x) {
+        const cards = [...grid.querySelectorAll(".item-card:not(.dragging)")];
+        return cards.reduce(
+          (closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - (box.top + box.height / 2);
+            if (offset < 0 && offset > closest.offset) {
+              return { offset, element: child };
+            }
+            return closest;
+          },
+          { offset: Number.NEGATIVE_INFINITY },
+        ).element;
+      }
+
+      // ---- Persistência por aba (grids) ----
+      function activeTabKey() {
+        return (
+          document.querySelector(".tab.active")?.dataset.tab || "dashboard"
+        );
+      }
+
+      function persistGrid(tabKey) {
+        const grid = document.querySelector(`[data-tab-grid="${tabKey}"]`);
+        if (!grid) return;
+        const items = [...grid.querySelectorAll(".item-card")].map((c) => ({
+          id: c.dataset.id || null,
+          title: c.querySelector(".title")?.textContent?.trim() || "Item",
+          color: c.dataset.color || null,
+          type: c.dataset.type || "item",
+        }));
+        localStorage.setItem(`grid:${tabKey}`, JSON.stringify(items));
+      }
+
+      function loadGrid(tabKey) {
+        const grid = document.querySelector(`[data-tab-grid="${tabKey}"]`);
+        if (!grid) return;
+        const adder = grid.querySelector('[data-role="adder"]');
+        const raw = localStorage.getItem(`grid:${tabKey}`);
+        if (!raw) return;
+        try {
+          const items = JSON.parse(raw);
+          [...grid.querySelectorAll(".item-card")].forEach((n) => n.remove());
+          items.forEach((item) => {
+            let { id, title, color, type } = item;
+            if (!id) {
+              if (type === "project") id = addProject(title, {});
+              else if (type === "area") id = addArea(title, "");
+              else if (type === "resource")
+                id = addResource(title, { type: "note" });
+            }
+            const card =
+              type === "project"
+                ? createProjectCard(title, color, { id })
+                : createItemCard(title, color, { id, type });
+            if (color)
+              card.style.boxShadow = `inset 0 0 0 1px ${color}55, var(--shadow)`;
+            grid.insertBefore(card, adder);
+          });
+          persistGrid(tabKey);
+        } catch (err) {
+          console.warn("Erro ao carregar grid", err);
         }
       }
-    }
 
-    function startTimer(){ if(timer) return; timer = setInterval(tick, 1000); }
-    function pauseTimer(){ if(!timer) return; clearInterval(timer); timer = null; }
-    function stopTimer(){ pauseTimer(); }
+      ["projetos", "areas", "recursos"].forEach(loadGrid);
+      renderArchive();
+      renderDashboard();
 
-    startBtn?.addEventListener('click', startTimer);
-    pauseBtn?.addEventListener('click', pauseTimer);
-    resetBtn?.addEventListener('click', () => { stopTimer(); applyMode(mode); });
+      // =================== HÁBITOS ===================
+      const habitListEl = document.getElementById("habitList");
+      const habitNameEl = document.getElementById("habitName");
+      const addHabitBtn = document.getElementById("addHabitBtn");
+      const clearWeekBtn = document.getElementById("clearWeekBtn");
+      const habitWeekLabel = document.getElementById("habitWeekLabel");
 
-    savePomo?.addEventListener('click', () => {
-      const s = loadPomo();
-      s.focus = Math.max(1, parseInt(setFocus.value||'25',10));
-      s.short = Math.max(1, parseInt(setShort.value||'5',10));
-      s.long = Math.max(1, parseInt(setLong.value||'15',10));
-      savePomoSettings(s);
-      applyMode(mode);
-      showToast('Durações salvas');
-    });
+      const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 
-    function updateCount(s){
-      const today = new Date().toISOString().slice(0,10);
-      if(s.countDate !== today){ s.countDate = today; s.count = 0; savePomoSettings(s); }
-      pomoCountEl.textContent = s.count;
-    }
+      function startOfWeek(d = new Date()) {
+        const n = new Date(
+          Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()),
+        );
+        const day = (n.getUTCDay() + 6) % 7; // 0=Seg
+        n.setUTCDate(n.getUTCDate() - day);
+        n.setUTCHours(0, 0, 0, 0);
+        return n; // Monday UTC
+      }
+      function fmtISO(d) {
+        return d.toISOString().slice(0, 10);
+      }
+      function weekKey(date = new Date()) {
+        const start = startOfWeek(date);
+        const end = new Date(start);
+        end.setUTCDate(end.getUTCDate() + 6);
+        habitWeekLabel.textContent = `${fmtISO(start)} a ${fmtISO(end)}`;
+        return `habits:${fmtISO(start)}`;
+      }
 
-    syncSettingsFromStore();
+      function loadHabits() {
+        const key = "habits:list";
+        try {
+          return JSON.parse(localStorage.getItem(key)) || [];
+        } catch {
+          return [];
+        }
+      }
+      function saveHabits(list) {
+        localStorage.setItem("habits:list", JSON.stringify(list));
+      }
 
-    // ---- Salvar botão (feedback geral) ----
-    saveBtn.addEventListener('click', () => {
-      persistGrid(activeTabKey());
-      showToast('Organização salva');
-    });
+      function loadChecks() {
+        const data = localStorage.getItem(weekKey());
+        try {
+          return data ? JSON.parse(data) : {};
+        } catch {
+          return {};
+        }
+      }
+      function saveChecks(obj) {
+        localStorage.setItem(weekKey(), JSON.stringify(obj));
+      }
 
-    // ---- Helpers ----
-    function escapeHtml(str){
-      return str.replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
-    }
-  </script>
-</body>
+      function renderHabits() {
+        const habits = loadHabits();
+        const checks = loadChecks();
+        habitListEl.innerHTML = "";
+        if (habits.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "habit-empty";
+          empty.textContent = "Nenhum hábito ainda. Crie o primeiro acima.";
+          habitListEl.appendChild(empty);
+          return;
+        }
+
+        const header = document.createElement("div");
+        header.className = "habit-row";
+        header.innerHTML = `<div class="name muted">Hábito</div>${DAYS.map((d) => `<div class="muted" style="text-align:center;">${d}</div>`).join("")}<div class="muted pct">%</div>`;
+        habitListEl.appendChild(header);
+
+        habits.forEach((h, idx) => {
+          const row = document.createElement("div");
+          row.className = "habit-row";
+          row.dataset.index = idx;
+          const id = `h${idx}`;
+          row.innerHTML =
+            `<div class="name">${escapeHtml(h)}</div>` +
+            DAYS.map((d, di) => {
+              const checked = checks[id]?.includes(di) ? "checked" : "";
+              return `<div class="day ${checked}" data-di="${di}">${checked ? "✔" : ""}</div>`;
+            }).join("") +
+            `<div class="pct" data-pct>0%</div>`;
+
+          // toggle
+          row.querySelectorAll(".day").forEach((cell) => {
+            cell.addEventListener("click", () => {
+              const di = Number(cell.dataset.di);
+              const obj = loadChecks();
+              obj[id] = obj[id] || [];
+              const i = obj[id].indexOf(di);
+              if (i >= 0) {
+                obj[id].splice(i, 1);
+                cell.classList.remove("checked");
+                cell.textContent = "";
+              } else {
+                obj[id].push(di);
+                cell.classList.add("checked");
+                cell.textContent = "✔";
+              }
+              saveChecks(obj);
+              updatePct(row, obj[id]);
+            });
+          });
+
+          // initial pct
+          updatePct(row, checks[id] || []);
+          habitListEl.appendChild(row);
+        });
+
+        // Remover hábito (duplo clique no nome)
+        habitListEl.querySelectorAll(".habit-row .name").forEach((el, i) => {
+          el.title = "Duplo clique para renomear / remover";
+          el.addEventListener("dblclick", () => {
+            const habits = loadHabits();
+            const newName = prompt(
+              "Renomear hábito (deixe vazio para remover):",
+              habits[i],
+            );
+            if (newName === null) return;
+            if (newName.trim() === "") {
+              habits.splice(i, 1);
+              saveHabits(habits);
+              renderHabits();
+              return;
+            }
+            habits[i] = newName.trim();
+            saveHabits(habits);
+            renderHabits();
+          });
+        });
+      }
+
+      function updatePct(row, arr) {
+        const pct = Math.round((arr.length / 7) * 100);
+        row.querySelector("[data-pct]").textContent = pct + "%";
+      }
+
+      addHabitBtn?.addEventListener("click", () => {
+        const name = (habitNameEl.value || "").trim();
+        if (!name) return;
+        const list = loadHabits();
+        list.push(name);
+        saveHabits(list);
+        habitNameEl.value = "";
+        renderHabits();
+        showToast("Hábito adicionado");
+      });
+
+      clearWeekBtn?.addEventListener("click", () => {
+        if (confirm("Limpar marcações da semana atual?")) {
+          saveChecks({});
+          renderHabits();
+        }
+      });
+
+      // Inicializa semana
+      weekKey();
+      renderHabits();
+
+      // =================== POMODORO ===================
+      const chips = document.querySelectorAll(".chip");
+      const display = document.getElementById("pomoDisplay");
+      const startBtn = document.getElementById("pomoStart");
+      const pauseBtn = document.getElementById("pomoPause");
+      const resetBtn = document.getElementById("pomoReset");
+      const setFocus = document.getElementById("setFocus");
+      const setShort = document.getElementById("setShort");
+      const setLong = document.getElementById("setLong");
+      const savePomo = document.getElementById("savePomo");
+      const pomoCountEl = document.getElementById("pomoCount");
+
+      let timer = null;
+      let remaining = 25 * 60;
+      let mode = "focus";
+
+      function loadPomo() {
+        try {
+          return (
+            JSON.parse(localStorage.getItem("pomo:settings")) || {
+              focus: 25,
+              short: 5,
+              long: 15,
+              countDate: "",
+              count: 0,
+            }
+          );
+        } catch {
+          return { focus: 25, short: 5, long: 15, countDate: "", count: 0 };
+        }
+      }
+      function savePomoSettings(obj) {
+        localStorage.setItem("pomo:settings", JSON.stringify(obj));
+      }
+
+      function syncSettingsFromStore() {
+        const s = loadPomo();
+        setFocus.value = s.focus;
+        setShort.value = s.short;
+        setLong.value = s.long;
+        updateCount(s);
+        applyMode(mode, false);
+      }
+
+      function applyMode(m, reset = true) {
+        mode = m;
+        chips.forEach((c) =>
+          c.classList.toggle("active", c.dataset.mode === m),
+        );
+        const s = loadPomo();
+        const mins = m === "focus" ? s.focus : m === "short" ? s.short : s.long;
+        remaining = mins * 60;
+        if (reset) updateDisplay();
+        else display.textContent = fmtTime(remaining);
+      }
+
+      function fmtTime(sec) {
+        const m = Math.floor(sec / 60)
+          .toString()
+          .padStart(2, "0");
+        const s = Math.floor(sec % 60)
+          .toString()
+          .padStart(2, "0");
+        return `${m}:${s}`;
+      }
+      function updateDisplay() {
+        display.textContent = fmtTime(remaining);
+      }
+
+      chips.forEach((c) =>
+        c.addEventListener("click", () => {
+          stopTimer();
+          applyMode(c.dataset.mode);
+        }),
+      );
+
+      function tick() {
+        if (remaining > 0) {
+          remaining--;
+          updateDisplay();
+        } else {
+          // terminou ciclo
+          stopTimer();
+          if (mode === "focus") {
+            // incrementa contagem diária
+            const s = loadPomo();
+            const today = new Date().toISOString().slice(0, 10);
+            if (s.countDate !== today) {
+              s.countDate = today;
+              s.count = 0;
+            }
+            s.count += 1;
+            savePomoSettings(s);
+            updateCount(s);
+            // muda para pausa curta por padrão
+            applyMode("short");
+            showToast("Foco concluído! Pausa curta.");
+          } else {
+            applyMode("focus");
+            showToast("Pausa concluída! De volta ao foco.");
+          }
+        }
+      }
+
+      function startTimer() {
+        if (timer) return;
+        timer = setInterval(tick, 1000);
+      }
+      function pauseTimer() {
+        if (!timer) return;
+        clearInterval(timer);
+        timer = null;
+      }
+      function stopTimer() {
+        pauseTimer();
+      }
+
+      startBtn?.addEventListener("click", startTimer);
+      pauseBtn?.addEventListener("click", pauseTimer);
+      resetBtn?.addEventListener("click", () => {
+        stopTimer();
+        applyMode(mode);
+      });
+
+      savePomo?.addEventListener("click", () => {
+        const s = loadPomo();
+        s.focus = Math.max(1, parseInt(setFocus.value || "25", 10));
+        s.short = Math.max(1, parseInt(setShort.value || "5", 10));
+        s.long = Math.max(1, parseInt(setLong.value || "15", 10));
+        savePomoSettings(s);
+        applyMode(mode);
+        showToast("Durações salvas");
+      });
+
+      function updateCount(s) {
+        const today = new Date().toISOString().slice(0, 10);
+        if (s.countDate !== today) {
+          s.countDate = today;
+          s.count = 0;
+          savePomoSettings(s);
+        }
+        pomoCountEl.textContent = s.count;
+      }
+
+      syncSettingsFromStore();
+
+      // ---- Salvar botão (feedback geral) ----
+      saveBtn.addEventListener("click", () => {
+        persistGrid(activeTabKey());
+        showToast("Organização salva");
+      });
+
+      // ---- Helpers ----
+      function escapeHtml(str) {
+        return str.replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      }
+    </script>
+  </body>
 </html>
