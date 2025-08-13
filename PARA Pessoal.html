@@ -626,28 +626,15 @@
         <section class="content">
           <div id="view-dashboard" class="view">
             <div class="grid" data-tab-grid="dashboard">
-              <div class="card item-card" data-color="#6d7cff">
-                <div class="handle" aria-hidden="true">
-                  <button class="rename" title="Renomear">✏️</button>
-                  <button class="paint" title="Cor">🎨</button>
-                  <button class="remove" title="Remover">🗑️</button>
-                </div>
-                <div class="badge">Widget</div>
-                <div class="title" contenteditable="false">Indicadores</div>
-                <div class="muted">KPIs do provedor • hoje</div>
+              <div class="card item-card" id="indicadoresCard">
+                <div class="badge">Indicadores</div>
+                <div class="title">Indicadores</div>
+                <div class="muted"></div>
               </div>
-              <div class="card item-card" data-color="#40d6b5">
-                <div class="handle" aria-hidden="true">
-                  <button class="rename" title="Renomear">✏️</button>
-                  <button class="paint" title="Cor">🎨</button>
-                  <button class="remove" title="Remover">🗑️</button>
-                </div>
-                <div class="badge">Widget</div>
-                <div class="title" contenteditable="false">OS do Dia</div>
-                <div class="muted">Prioridades e SLA</div>
-              </div>
-              <div class="card add-card" data-role="adder" title="Adicionar">
-                <div class="plus">+</div>
+              <div class="card item-card" id="osCard">
+                <div class="badge">OS do Dia</div>
+                <div class="title">OS do Dia</div>
+                <div class="muted"></div>
               </div>
             </div>
           </div>
@@ -677,11 +664,7 @@
           </div>
 
           <div id="view-arquivo" class="view" hidden>
-            <div class="grid" data-tab-grid="arquivo">
-              <div class="card add-card" data-role="adder" title="Adicionar">
-                <div class="plus">+</div>
-              </div>
-            </div>
+            <div class="grid" data-tab-grid="arquivo"></div>
           </div>
 
           <!-- ===== HÁBITOS ===== -->
@@ -926,6 +909,129 @@
         saveDB(db);
       }
 
+      function restoreItem(kind, id) {
+        const db = loadDB();
+        if (kind === "project" && db.projects[id]) {
+          db.projects[id].status = "active";
+          db.archive.projectIds = db.archive.projectIds.filter(
+            (pid) => pid !== id,
+          );
+        }
+        if (kind === "resource" && db.resources[id]) {
+          db.archive.resourceIds = db.archive.resourceIds.filter(
+            (rid) => rid !== id,
+          );
+        }
+        if (kind === "area" && db.areas[id]) {
+          db.archive.areaIds = db.archive.areaIds.filter((aid) => aid !== id);
+        }
+        saveDB(db);
+      }
+
+      function createArchiveCard(title, type, opts = {}) {
+        const { id = null } = opts;
+        const div = document.createElement("div");
+        div.className = "card item-card";
+        div.dataset.type = type;
+        if (id) div.dataset.id = id;
+        div.innerHTML = `
+    <div class="badge">${
+      type === "project" ? "Projeto" : type === "area" ? "Área" : "Recurso"
+    }</div>
+    <div class="title">${escapeHtml(title)}</div>
+    <button class="btn restore-btn" style="margin-top:8px;">Restaurar</button>
+  `;
+        div.addEventListener("click", (e) => {
+          if (e.target.closest(".restore-btn")) return;
+          if (type === "project") openProjectModal(div);
+          else if (type === "area") openAreaModal(div);
+          else if (type === "resource") openResourceModal(div);
+        });
+        const restoreBtn = div.querySelector(".restore-btn");
+        restoreBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          restoreItem(type, id);
+          const db = loadDB();
+          const tabKey =
+            type === "project"
+              ? "projetos"
+              : type === "area"
+                ? "areas"
+                : "recursos";
+          const grid = document.querySelector(`[data-tab-grid="${tabKey}"]`);
+          if (grid) {
+            const adder = grid.querySelector('[data-role="adder"]');
+            const item =
+              type === "project"
+                ? db.projects[id]
+                : type === "area"
+                  ? db.areas[id]
+                  : db.resources[id];
+            const card =
+              type === "project"
+                ? createProjectCard(item.title, null, { id })
+                : createItemCard(item.title, null, { id, type });
+            grid.insertBefore(card, adder);
+            persistGrid(tabKey);
+          }
+          renderArchive();
+          showToast("Item restaurado");
+        });
+        return div;
+      }
+
+      function renderArchive() {
+        const grid = document.querySelector('[data-tab-grid="arquivo"]');
+        if (!grid) return;
+        grid.querySelectorAll(".item-card").forEach((n) => n.remove());
+        const db = loadDB();
+        const stored = JSON.parse(localStorage.getItem("grid:arquivo") || "[]");
+        const items = [
+          ...db.archive.projectIds.map((id) => ({ id, type: "project" })),
+          ...db.archive.areaIds.map((id) => ({ id, type: "area" })),
+          ...db.archive.resourceIds.map((id) => ({ id, type: "resource" })),
+        ];
+        items.sort((a, b) => {
+          const ia = stored.findIndex((s) => s.id === a.id);
+          const ib = stored.findIndex((s) => s.id === b.id);
+          if (ia === -1 && ib === -1) return 0;
+          if (ia === -1) return 1;
+          if (ib === -1) return -1;
+          return ia - ib;
+        });
+        items.forEach(({ id, type }) => {
+          const data =
+            type === "project"
+              ? db.projects[id]
+              : type === "area"
+                ? db.areas[id]
+                : db.resources[id];
+          if (!data) return;
+          const card = createArchiveCard(data.title, type, { id });
+          const storedItem = stored.find((s) => s.id === id);
+          const color = storedItem?.color;
+          if (color)
+            card.style.boxShadow = `inset 0 0 0 1px ${color}55, var(--shadow)`;
+          grid.appendChild(card);
+        });
+        persistGrid("arquivo");
+      }
+
+      function renderDashboard() {
+        const card = document.getElementById("indicadoresCard");
+        if (!card) return;
+        const db = loadDB();
+        const activeProjects = Object.values(db.projects).filter(
+          (p) => p.status !== "archived",
+        ).length;
+        const openProj = Object.values(db.projects).filter(
+          (p) => p.status !== "archived" && p.tasks.some((t) => !t.done),
+        ).length;
+        const resCount = Object.keys(db.resources).length;
+        card.querySelector(".muted").innerHTML =
+          `Projetos ativos: ${activeProjects}<br>Projetos com tarefas abertas: ${openProj}<br>Recursos: ${resCount}`;
+      }
+
       // ---- Abas ----
       tabs.forEach((t) =>
         t.addEventListener("click", () => {
@@ -935,6 +1041,8 @@
           crumb.textContent =
             t.querySelector("span")?.textContent || t.dataset.tab;
           Object.entries(views).forEach(([k, el]) => (el.hidden = k !== tab));
+          if (tab === "dashboard") renderDashboard();
+          if (tab === "arquivo") renderArchive();
         }),
       );
 
@@ -1216,6 +1324,9 @@
         archiveBtn.addEventListener("click", () => {
           if (confirm("Arquivar este projeto?")) {
             archiveItem("project", id);
+            card.remove();
+            persistGrid("projetos");
+            renderArchive();
             showToast("Projeto arquivado");
             modalBackdrop.style.display = "none";
           }
@@ -1270,6 +1381,9 @@
         archiveBtn.addEventListener("click", () => {
           if (confirm("Arquivar esta área?")) {
             archiveItem("area", id);
+            card.remove();
+            persistGrid("areas");
+            renderArchive();
             showToast("Área arquivada");
             modalBackdrop.style.display = "none";
           }
@@ -1396,6 +1510,9 @@
         archiveBtn.addEventListener("click", () => {
           if (confirm("Arquivar este recurso?")) {
             archiveItem("resource", id);
+            card.remove();
+            persistGrid("recursos");
+            renderArchive();
             showToast("Recurso arquivado");
             modalBackdrop.style.display = "none";
           }
@@ -1505,7 +1622,14 @@
         try {
           const items = JSON.parse(raw);
           [...grid.querySelectorAll(".item-card")].forEach((n) => n.remove());
-          items.forEach(({ id, title, color, type }) => {
+          items.forEach((item) => {
+            let { id, title, color, type } = item;
+            if (!id) {
+              if (type === "project") id = addProject(title, {});
+              else if (type === "area") id = addArea(title, "");
+              else if (type === "resource")
+                id = addResource(title, { type: "note" });
+            }
             const card =
               type === "project"
                 ? createProjectCard(title, color, { id })
@@ -1514,14 +1638,15 @@
               card.style.boxShadow = `inset 0 0 0 1px ${color}55, var(--shadow)`;
             grid.insertBefore(card, adder);
           });
+          persistGrid(tabKey);
         } catch (err) {
           console.warn("Erro ao carregar grid", err);
         }
       }
 
-      ["dashboard", "projetos", "areas", "recursos", "arquivo"].forEach(
-        loadGrid,
-      );
+      ["projetos", "areas", "recursos"].forEach(loadGrid);
+      renderArchive();
+      renderDashboard();
 
       // =================== HÁBITOS ===================
       const habitListEl = document.getElementById("habitList");
