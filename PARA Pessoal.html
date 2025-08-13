@@ -352,7 +352,7 @@
       const tabKey = grid.getAttribute('data-tab-grid');
       const name = prompt('Nome do elemento:');
       if(!name) return;
-      const card = createItemCard(name);
+      const card = tabKey === 'projetos' ? createProjectCard(name) : createItemCard(name);
       grid.insertBefore(card, add);
       persistGrid(tabKey);
       showToast('Item criado');
@@ -376,10 +376,33 @@
       return div;
     }
 
+    function createProjectCard(title, color){
+      const div = document.createElement('div');
+      div.className = 'card item-card project-card';
+      div.dataset.type = 'project';
+      if(color) div.dataset.color = color;
+      div.innerHTML = `
+        <div class="handle" aria-hidden="true">
+          <button class="rename" title="Renomear">✏️</button>
+          <button class="paint" title="Cor">🎨</button>
+          <button class="remove" title="Remover">🗑️</button>
+        </div>
+        <div class="badge">Projeto</div>
+        <div class="title" contenteditable="false">${escapeHtml(title)}</div>
+        <div class="muted">Gerencie tarefas</div>
+      `;
+      hookItemCard(div);
+      return div;
+    }
+
     function hookItemCard(card){
       card.addEventListener('click', (e) => {
         if(editMode) return; // em edição, não abre modal
         if(e.target.closest('.handle')) return;
+        if(card.dataset.type === 'project'){
+          openProjectModal(card);
+          return;
+        }
         const title = card.querySelector('.title')?.textContent || 'Janela';
         modalTitle.textContent = title;
         modalContent.textContent = `Conteúdos de “${title}”. Depois conectamos a uma página real ou link.`;
@@ -411,6 +434,67 @@
         e.stopPropagation();
         if(confirm('Remover este item?')){ card.remove(); persistGrid(activeTabKey()); showToast('Item removido'); }
       });
+    }
+
+    function projectStorageKey(name){
+      return `project:${name}`;
+    }
+
+    function loadProjectData(name){
+      try {
+        return JSON.parse(localStorage.getItem(projectStorageKey(name))) || {desc:'', tasks:[]};
+      } catch { return {desc:'', tasks:[]}; }
+    }
+
+    function saveProjectData(name, data){
+      localStorage.setItem(projectStorageKey(name), JSON.stringify(data));
+    }
+
+    function openProjectModal(card){
+      const title = card.querySelector('.title')?.textContent || 'Projeto';
+      const data = loadProjectData(title);
+      modalTitle.textContent = title;
+      modalContent.innerHTML = `
+        <div>
+          <input id="projDesc" type="text" placeholder="Descrição" style="width:100%;padding:8px;margin-bottom:10px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
+          <ul id="taskList" style="list-style:none;padding:0;margin:0 0 10px 0;"></ul>
+          <div style="display:flex;gap:8px;">
+            <input id="taskInput" type="text" placeholder="Nova tarefa" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
+            <button id="addTaskBtn" class="btn">Adicionar</button>
+          </div>
+        </div>
+      `;
+      const descEl = modalContent.querySelector('#projDesc');
+      const listEl = modalContent.querySelector('#taskList');
+      const inputEl = modalContent.querySelector('#taskInput');
+      const addBtn = modalContent.querySelector('#addTaskBtn');
+      descEl.value = data.desc;
+      descEl.addEventListener('change', () => { data.desc = descEl.value; saveProjectData(title, data); });
+      function renderTasks(){
+        listEl.innerHTML = '';
+        data.tasks.forEach((t, i) => {
+          const li = document.createElement('li');
+          li.style.display = 'flex';
+          li.style.alignItems = 'center';
+          li.style.gap = '6px';
+          li.style.marginBottom = '4px';
+          li.innerHTML = `<input type="checkbox" ${t.done?'checked':''}> <span>${escapeHtml(t.text)}</span>`;
+          const checkbox = li.querySelector('input');
+          checkbox.addEventListener('change', () => { data.tasks[i].done = checkbox.checked; saveProjectData(title, data); });
+          listEl.appendChild(li);
+        });
+      }
+      addBtn.addEventListener('click', () => {
+        const text = inputEl.value.trim();
+        if(!text) return;
+        data.tasks.push({text, done:false});
+        inputEl.value = '';
+        renderTasks();
+        saveProjectData(title, data);
+      });
+      renderTasks();
+      modalBackdrop.style.display = 'flex';
+      modalBackdrop.setAttribute('aria-hidden','false');
     }
 
     closeModalBtn.addEventListener('click', () => {
@@ -482,7 +566,8 @@
       if(!grid) return;
       const items = [...grid.querySelectorAll('.item-card')].map(c => ({
         title: c.querySelector('.title')?.textContent?.trim() || 'Item',
-        color: c.dataset.color || null
+        color: c.dataset.color || null,
+        type: c.dataset.type || 'item'
       }));
       localStorage.setItem(`grid:${tabKey}`, JSON.stringify(items));
     }
@@ -496,8 +581,8 @@
       try {
         const items = JSON.parse(raw);
         [...grid.querySelectorAll('.item-card')].forEach(n => n.remove());
-        items.forEach(({title, color}) => {
-          const card = createItemCard(title, color);
+        items.forEach(({title, color, type}) => {
+          const card = type === 'project' ? createProjectCard(title, color) : createItemCard(title, color);
           if(color) card.style.boxShadow = `inset 0 0 0 1px ${color}55, var(--shadow)`;
           grid.insertBefore(card, adder);
         });
