@@ -945,27 +945,42 @@
           const tabKey = grid.getAttribute("data-tab-grid");
           const name = prompt("Nome do elemento:");
           if (!name) return;
-          const card =
-            tabKey === "projetos"
-              ? createProjectCard(name)
-              : createItemCard(name);
+
+          let card;
+          if (tabKey === "projetos") {
+            const newId = addProject(name, {});
+            card = createProjectCard(name, null, { id: newId });
+          } else if (tabKey === "areas") {
+            const newId = addArea(name, "");
+            card = createItemCard(name, null, { id: newId, type: "area" });
+          } else if (tabKey === "recursos") {
+            const newId = addResource(name, { type: "note" });
+            card = createItemCard(name, null, { id: newId, type: "resource" });
+          } else {
+            // dashboard/arquivo: item avulso
+            card = createItemCard(name);
+          }
+
           grid.insertBefore(card, add);
           persistGrid(tabKey);
           showToast("Item criado");
         }),
       );
 
-      function createItemCard(title, color) {
+      function createItemCard(title, color, opts = {}) {
+        const { id = null, type = "item" } = opts;
         const div = document.createElement("div");
         div.className = "card item-card";
         if (color) div.dataset.color = color;
+        div.dataset.type = type;
+        if (id) div.dataset.id = id;
         div.innerHTML = `
         <div class="handle" aria-hidden="true">
           <button class="rename" title="Renomear">✏️</button>
           <button class="paint" title="Cor">🎨</button>
           <button class="remove" title="Remover">🗑️</button>
         </div>
-        <div class="badge">Janela</div>
+        <div class="badge">${type === "resource" ? "Recurso" : type === "area" ? "Área" : "Janela"}</div>
         <div class="title" contenteditable="false">${escapeHtml(title)}</div>
         <div class="muted">Clique para abrir</div>
       `;
@@ -973,11 +988,13 @@
         return div;
       }
 
-      function createProjectCard(title, color) {
+      function createProjectCard(title, color, opts = {}) {
+        const { id = null } = opts;
         const div = document.createElement("div");
         div.className = "card item-card project-card";
         div.dataset.type = "project";
         if (color) div.dataset.color = color;
+        if (id) div.dataset.id = id;
         div.innerHTML = `
         <div class="handle" aria-hidden="true">
           <button class="rename" title="Renomear">✏️</button>
@@ -1205,6 +1222,7 @@
         const grid = document.querySelector(`[data-tab-grid="${tabKey}"]`);
         if (!grid) return;
         const items = [...grid.querySelectorAll(".item-card")].map((c) => ({
+          id: c.dataset.id || null,
           title: c.querySelector(".title")?.textContent?.trim() || "Item",
           color: c.dataset.color || null,
           type: c.dataset.type || "item",
@@ -1221,11 +1239,11 @@
         try {
           const items = JSON.parse(raw);
           [...grid.querySelectorAll(".item-card")].forEach((n) => n.remove());
-          items.forEach(({ title, color, type }) => {
+          items.forEach(({ id, title, color, type }) => {
             const card =
               type === "project"
-                ? createProjectCard(title, color)
-                : createItemCard(title, color);
+                ? createProjectCard(title, color, { id })
+                : createItemCard(title, color, { id, type });
             if (color)
               card.style.boxShadow = `inset 0 0 0 1px ${color}55, var(--shadow)`;
             grid.insertBefore(card, adder);
