@@ -189,6 +189,11 @@
         border: 1px dashed var(--stroke);
         color: var(--muted);
       }
+      .btn.danger {
+        background: #b33;
+        border-color: #b33;
+        color: #fff;
+      }
       .edit-indicator {
         font-size: 12px;
         color: var(--muted);
@@ -1151,6 +1156,16 @@
           const newName = prompt("Novo nome:", titleEl.textContent?.trim());
           if (newName) {
             titleEl.textContent = newName;
+            const id = card.dataset.id;
+            const type = card.dataset.type;
+            const db = loadDB();
+            if (type === "project" && db.projects[id])
+              db.projects[id].title = newName;
+            if (type === "area" && db.areas[id])
+              db.areas[id].title = newName;
+            if (type === "resource" && db.resources[id])
+              db.resources[id].title = newName;
+            saveDB(db);
             persistGrid(activeTabKey());
           }
         });
@@ -1229,6 +1244,7 @@
         <button id="attachResBtn" class="btn">Anexar</button>
       </div>
     </div>
+    <button id="deleteProj" class="btn danger">Excluir projeto</button>
   </div>
 `;
         const descEl = modalContent.querySelector("#projDesc");
@@ -1240,6 +1256,7 @@
         const resPicker = modalContent.querySelector("#resPicker");
         const attachResBtn = modalContent.querySelector("#attachResBtn");
         const archiveBtn = modalContent.querySelector("#archiveProj");
+        const deleteBtn = modalContent.querySelector("#deleteProj");
 
         descEl.value = project.desc || "";
         areaSel.value = project.areaId || "";
@@ -1332,6 +1349,35 @@
           }
         });
 
+        deleteBtn.addEventListener("click", () => {
+          if (confirm("Excluir definitivamente este projeto?")) {
+            const db = loadDB();
+            const proj = db.projects[id];
+            if (proj.areaId && db.areas[proj.areaId]) {
+              db.areas[proj.areaId].projectIds = db.areas[proj.areaId].projectIds.filter(
+                (pid) => pid !== id,
+              );
+            }
+            proj.resourceIds.forEach((rid) => {
+              if (db.resources[rid]) {
+                db.resources[rid].projectIds = db.resources[rid].projectIds.filter(
+                  (pid) => pid !== id,
+                );
+              }
+            });
+            delete db.projects[id];
+            db.archive.projectIds = db.archive.projectIds.filter(
+              (pid) => pid !== id,
+            );
+            saveDB(db);
+            card.remove();
+            persistGrid("projetos");
+            renderArchive();
+            showToast("Projeto excluído");
+            modalBackdrop.style.display = "none";
+          }
+        });
+
         modalBackdrop.style.display = "flex";
         modalBackdrop.setAttribute("aria-hidden", "false");
       }
@@ -1350,11 +1396,13 @@
       <ul id="areaProjList" style="list-style:none;padding:0;margin:0 0 10px 0;"></ul>
     </div>
     <button id="archiveArea" class="btn ghost">Arquivar área</button>
+    <button id="deleteArea" class="btn danger">Excluir área</button>
   </div>
 `;
         const descEl = modalContent.querySelector("#areaDesc");
         const projList = modalContent.querySelector("#areaProjList");
         const archiveBtn = modalContent.querySelector("#archiveArea");
+        const deleteBtn = modalContent.querySelector("#deleteArea");
 
         descEl.value = area.desc || "";
         renderProjects();
@@ -1385,6 +1433,24 @@
             persistGrid("areas");
             renderArchive();
             showToast("Área arquivada");
+            modalBackdrop.style.display = "none";
+          }
+        });
+
+        deleteBtn.addEventListener("click", () => {
+          if (confirm("Excluir definitivamente esta área?")) {
+            const db = loadDB();
+            const a = db.areas[id];
+            a.projectIds.forEach((pid) => {
+              if (db.projects[pid]) db.projects[pid].areaId = null;
+            });
+            delete db.areas[id];
+            db.archive.areaIds = db.archive.areaIds.filter((aid) => aid !== id);
+            saveDB(db);
+            card.remove();
+            persistGrid("areas");
+            renderArchive();
+            showToast("Área excluída");
             modalBackdrop.style.display = "none";
           }
         });
@@ -1424,6 +1490,7 @@
       <div id="resProjChecks" style="display:flex;flex-direction:column;gap:4px;"></div>
     </div>
     <button id="archiveRes" class="btn ghost">Arquivar recurso</button>
+    <button id="deleteRes" class="btn danger">Excluir recurso</button>
   </div>
 `;
         const typeSel = modalContent.querySelector("#resType");
@@ -1433,6 +1500,7 @@
         const areaSel = modalContent.querySelector("#resArea");
         const projChecks = modalContent.querySelector("#resProjChecks");
         const archiveBtn = modalContent.querySelector("#archiveRes");
+        const deleteBtn = modalContent.querySelector("#deleteRes");
 
         typeSel.value = resource.type || "note";
         urlEl.value = resource.url || "";
@@ -1514,6 +1582,30 @@
             persistGrid("recursos");
             renderArchive();
             showToast("Recurso arquivado");
+            modalBackdrop.style.display = "none";
+          }
+        });
+
+        deleteBtn.addEventListener("click", () => {
+          if (confirm("Excluir definitivamente este recurso?")) {
+            const db = loadDB();
+            const res = db.resources[id];
+            res.projectIds.forEach((pid) => {
+              if (db.projects[pid]) {
+                db.projects[pid].resourceIds = db.projects[pid].resourceIds.filter(
+                  (rid) => rid !== id,
+                );
+              }
+            });
+            delete db.resources[id];
+            db.archive.resourceIds = db.archive.resourceIds.filter(
+              (rid) => rid !== id,
+            );
+            saveDB(db);
+            card.remove();
+            persistGrid("recursos");
+            renderArchive();
+            showToast("Recurso excluído");
             modalBackdrop.style.display = "none";
           }
         });
