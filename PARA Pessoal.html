@@ -1017,6 +1017,14 @@
             openProjectModal(card);
             return;
           }
+          if (card.dataset.type === "area") {
+            openAreaModal(card);
+            return;
+          }
+          if (card.dataset.type === "resource") {
+            openResourceModal(card);
+            return;
+          }
           const title = card.querySelector(".title")?.textContent || "Janela";
           modalTitle.textContent = title;
           modalContent.textContent = `Conteúdos de “${title}”. Depois conectamos a uma página real ou link.`;
@@ -1065,53 +1073,95 @@
         });
       }
 
-      function projectStorageKey(name) {
-        return `project:${name}`;
-      }
-
-      function loadProjectData(name) {
-        try {
-          return (
-            JSON.parse(localStorage.getItem(projectStorageKey(name))) || {
-              desc: "",
-              tasks: [],
-            }
-          );
-        } catch {
-          return { desc: "", tasks: [] };
-        }
-      }
-
-      function saveProjectData(name, data) {
-        localStorage.setItem(projectStorageKey(name), JSON.stringify(data));
-      }
-
       function openProjectModal(card) {
         const title = card.querySelector(".title")?.textContent || "Projeto";
-        const data = loadProjectData(title);
+        const id = card.dataset.id;
+        const db = loadDB();
+        const project = db.projects[id];
         modalTitle.textContent = title;
         modalContent.innerHTML = `
-        <div>
-          <input id="projDesc" type="text" placeholder="Descrição" style="width:100%;padding:8px;margin-bottom:10px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
-          <ul id="taskList" style="list-style:none;padding:0;margin:0 0 10px 0;"></ul>
-          <div style="display:flex;gap:8px;">
-            <input id="taskInput" type="text" placeholder="Nova tarefa" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
-            <button id="addTaskBtn" class="btn">Adicionar</button>
-          </div>
-        </div>
-      `;
+  <div style="display:grid; gap:10px;">
+    <input id="projDesc" type="text" placeholder="Descrição" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
+
+    <div style="display:flex; gap:8px; align-items:center;">
+      <label>Área:
+        <select id="projArea" style="padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;">
+          <option value="">(sem área)</option>
+          ${Object.values(db.areas)
+            .map(
+              (a) => `<option value="${a.id}">${escapeHtml(a.title)}</option>`,
+            )
+            .join("")}
+        </select>
+      </label>
+      <button id="archiveProj" class="btn ghost">Arquivar</button>
+    </div>
+
+    <div>
+      <div style="font-weight:600;margin:6px 0;">Tarefas</div>
+      <ul id="taskList" style="list-style:none;padding:0;margin:0 0 10px 0;"></ul>
+      <div style="display:flex;gap:8px;">
+        <input id="taskInput" type="text" placeholder="Nova tarefa" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
+        <button id="addTaskBtn" class="btn">Adicionar</button>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-weight:600;margin:6px 0;">Recursos anexados</div>
+      <ul id="resList" style="list-style:none;padding:0;margin:0 0 10px 0;"></ul>
+      <div style="display:flex;gap:8px;">
+        <select id="resPicker" style="flex:1; padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;">
+          <option value="">(Selecione um recurso existente)</option>
+          ${Object.values(db.resources)
+            .map(
+              (r) => `<option value="${r.id}">${escapeHtml(r.title)}</option>`,
+            )
+            .join("")}
+        </select>
+        <button id="attachResBtn" class="btn">Anexar</button>
+      </div>
+    </div>
+  </div>
+`;
         const descEl = modalContent.querySelector("#projDesc");
-        const listEl = modalContent.querySelector("#taskList");
-        const inputEl = modalContent.querySelector("#taskInput");
-        const addBtn = modalContent.querySelector("#addTaskBtn");
-        descEl.value = data.desc;
+        const areaSel = modalContent.querySelector("#projArea");
+        const taskList = modalContent.querySelector("#taskList");
+        const taskInput = modalContent.querySelector("#taskInput");
+        const addTaskBtn = modalContent.querySelector("#addTaskBtn");
+        const resList = modalContent.querySelector("#resList");
+        const resPicker = modalContent.querySelector("#resPicker");
+        const attachResBtn = modalContent.querySelector("#attachResBtn");
+        const archiveBtn = modalContent.querySelector("#archiveProj");
+
+        descEl.value = project.desc || "";
+        areaSel.value = project.areaId || "";
+        renderTasks();
+        renderRes();
+
         descEl.addEventListener("change", () => {
-          data.desc = descEl.value;
-          saveProjectData(title, data);
+          const db = loadDB();
+          db.projects[id].desc = descEl.value;
+          saveDB(db);
         });
+
+        areaSel.addEventListener("change", () => {
+          const db = loadDB();
+          const prev = db.projects[id].areaId;
+          const next = areaSel.value || null;
+          if (prev && db.areas[prev])
+            db.areas[prev].projectIds = db.areas[prev].projectIds.filter(
+              (pid) => pid !== id,
+            );
+          if (next && db.areas[next]) db.areas[next].projectIds.push(id);
+          db.projects[id].areaId = next;
+          saveDB(db);
+        });
+
         function renderTasks() {
-          listEl.innerHTML = "";
-          data.tasks.forEach((t, i) => {
+          const db = loadDB();
+          const proj = db.projects[id];
+          taskList.innerHTML = "";
+          proj.tasks.forEach((t, i) => {
             const li = document.createElement("li");
             li.style.display = "flex";
             li.style.alignItems = "center";
@@ -1120,21 +1170,237 @@
             li.innerHTML = `<input type="checkbox" ${t.done ? "checked" : ""}> <span>${escapeHtml(t.text)}</span>`;
             const checkbox = li.querySelector("input");
             checkbox.addEventListener("change", () => {
-              data.tasks[i].done = checkbox.checked;
-              saveProjectData(title, data);
+              const db = loadDB();
+              db.projects[id].tasks[i].done = checkbox.checked;
+              saveDB(db);
             });
-            listEl.appendChild(li);
+            taskList.appendChild(li);
           });
         }
-        addBtn.addEventListener("click", () => {
-          const text = inputEl.value.trim();
+
+        addTaskBtn.addEventListener("click", () => {
+          const text = (taskInput.value || "").trim();
           if (!text) return;
-          data.tasks.push({ text, done: false });
-          inputEl.value = "";
+          const db = loadDB();
+          db.projects[id].tasks.push({ text, done: false });
+          saveDB(db);
+          taskInput.value = "";
           renderTasks();
-          saveProjectData(title, data);
         });
-        renderTasks();
+
+        function renderRes() {
+          const db = loadDB();
+          const proj = db.projects[id];
+          resList.innerHTML = "";
+          proj.resourceIds.forEach((rid) => {
+            const r = db.resources[rid];
+            if (!r) return;
+            const li = document.createElement("li");
+            li.textContent = r.title + (r.url ? ` — ${r.url}` : "");
+            resList.appendChild(li);
+          });
+        }
+
+        attachResBtn.addEventListener("click", () => {
+          const rid = resPicker.value;
+          if (!rid) return;
+          const db = loadDB();
+          const proj = db.projects[id];
+          if (!proj.resourceIds.includes(rid)) proj.resourceIds.push(rid);
+          if (!db.resources[rid].projectIds.includes(id))
+            db.resources[rid].projectIds.push(id);
+          saveDB(db);
+          renderRes();
+        });
+
+        archiveBtn.addEventListener("click", () => {
+          if (confirm("Arquivar este projeto?")) {
+            archiveItem("project", id);
+            showToast("Projeto arquivado");
+            modalBackdrop.style.display = "none";
+          }
+        });
+
+        modalBackdrop.style.display = "flex";
+        modalBackdrop.setAttribute("aria-hidden", "false");
+      }
+
+      function openAreaModal(card) {
+        const title = card.querySelector(".title")?.textContent || "Área";
+        const id = card.dataset.id;
+        const db = loadDB();
+        const area = db.areas[id];
+        modalTitle.textContent = title;
+        modalContent.innerHTML = `
+  <div style="display:grid; gap:10px;">
+    <input id="areaDesc" type="text" placeholder="Descrição" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
+    <div>
+      <div style="font-weight:600;margin:6px 0;">Projetos</div>
+      <ul id="areaProjList" style="list-style:none;padding:0;margin:0 0 10px 0;"></ul>
+    </div>
+    <button id="archiveArea" class="btn ghost">Arquivar área</button>
+  </div>
+`;
+        const descEl = modalContent.querySelector("#areaDesc");
+        const projList = modalContent.querySelector("#areaProjList");
+        const archiveBtn = modalContent.querySelector("#archiveArea");
+
+        descEl.value = area.desc || "";
+        renderProjects();
+
+        descEl.addEventListener("change", () => {
+          const db = loadDB();
+          db.areas[id].desc = descEl.value;
+          saveDB(db);
+        });
+
+        function renderProjects() {
+          const db = loadDB();
+          const a = db.areas[id];
+          projList.innerHTML = "";
+          a.projectIds.forEach((pid) => {
+            const p = db.projects[pid];
+            if (!p) return;
+            const li = document.createElement("li");
+            li.textContent = p.title;
+            projList.appendChild(li);
+          });
+        }
+
+        archiveBtn.addEventListener("click", () => {
+          if (confirm("Arquivar esta área?")) {
+            archiveItem("area", id);
+            showToast("Área arquivada");
+            modalBackdrop.style.display = "none";
+          }
+        });
+
+        modalBackdrop.style.display = "flex";
+        modalBackdrop.setAttribute("aria-hidden", "false");
+      }
+
+      function openResourceModal(card) {
+        const title = card.querySelector(".title")?.textContent || "Recurso";
+        const id = card.dataset.id;
+        const db = loadDB();
+        const resource = db.resources[id];
+        modalTitle.textContent = title;
+        modalContent.innerHTML = `
+  <div style="display:grid; gap:10px;">
+    <label>Tipo:
+      <select id="resType" style="padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;">
+        <option value="note">Nota</option>
+        <option value="link">Link</option>
+        <option value="file">Arquivo</option>
+      </select>
+    </label>
+    <input id="resUrl" type="text" placeholder="URL" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
+    <textarea id="resNotes" placeholder="Notas" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"></textarea>
+    <input id="resTags" type="text" placeholder="Tags (separadas por vírgula)" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;"/>
+    <label>Área:
+      <select id="resArea" style="padding:8px;border-radius:8px;border:1px solid var(--stroke);background:#0f1320;color:#e7edf7;">
+        <option value="">(sem área)</option>
+        ${Object.values(db.areas)
+          .map((a) => `<option value="${a.id}">${escapeHtml(a.title)}</option>`)
+          .join("")}
+      </select>
+    </label>
+    <div>
+      <div style="font-weight:600;margin:6px 0;">Projetos associados</div>
+      <div id="resProjChecks" style="display:flex;flex-direction:column;gap:4px;"></div>
+    </div>
+    <button id="archiveRes" class="btn ghost">Arquivar recurso</button>
+  </div>
+`;
+        const typeSel = modalContent.querySelector("#resType");
+        const urlEl = modalContent.querySelector("#resUrl");
+        const notesEl = modalContent.querySelector("#resNotes");
+        const tagsEl = modalContent.querySelector("#resTags");
+        const areaSel = modalContent.querySelector("#resArea");
+        const projChecks = modalContent.querySelector("#resProjChecks");
+        const archiveBtn = modalContent.querySelector("#archiveRes");
+
+        typeSel.value = resource.type || "note";
+        urlEl.value = resource.url || "";
+        notesEl.value = resource.notes || "";
+        tagsEl.value = resource.tags ? resource.tags.join(", ") : "";
+        areaSel.value = resource.areaId || "";
+        renderProjChecks();
+
+        typeSel.addEventListener("change", () => {
+          const db = loadDB();
+          db.resources[id].type = typeSel.value;
+          saveDB(db);
+        });
+
+        urlEl.addEventListener("change", () => {
+          const db = loadDB();
+          db.resources[id].url = urlEl.value;
+          saveDB(db);
+        });
+
+        notesEl.addEventListener("change", () => {
+          const db = loadDB();
+          db.resources[id].notes = notesEl.value;
+          saveDB(db);
+        });
+
+        tagsEl.addEventListener("change", () => {
+          const db = loadDB();
+          db.resources[id].tags = tagsEl.value
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean);
+          saveDB(db);
+        });
+
+        areaSel.addEventListener("change", () => {
+          const db = loadDB();
+          db.resources[id].areaId = areaSel.value || null;
+          saveDB(db);
+        });
+
+        function renderProjChecks() {
+          const db = loadDB();
+          projChecks.innerHTML = "";
+          Object.values(db.projects).forEach((p) => {
+            const label = document.createElement("label");
+            label.style.display = "flex";
+            label.style.alignItems = "center";
+            label.style.gap = "4px";
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.value = p.id;
+            cb.checked = resource.projectIds.includes(p.id);
+            cb.addEventListener("change", () => {
+              const db = loadDB();
+              const res = db.resources[id];
+              if (cb.checked) {
+                if (!res.projectIds.includes(p.id)) res.projectIds.push(p.id);
+                if (!db.projects[p.id].resourceIds.includes(id))
+                  db.projects[p.id].resourceIds.push(id);
+              } else {
+                res.projectIds = res.projectIds.filter((pid) => pid !== p.id);
+                db.projects[p.id].resourceIds = db.projects[
+                  p.id
+                ].resourceIds.filter((rid) => rid !== id);
+              }
+              saveDB(db);
+            });
+            label.appendChild(cb);
+            label.appendChild(document.createTextNode(p.title));
+            projChecks.appendChild(label);
+          });
+        }
+
+        archiveBtn.addEventListener("click", () => {
+          if (confirm("Arquivar este recurso?")) {
+            archiveItem("resource", id);
+            showToast("Recurso arquivado");
+            modalBackdrop.style.display = "none";
+          }
+        });
+
         modalBackdrop.style.display = "flex";
         modalBackdrop.setAttribute("aria-hidden", "false");
       }
